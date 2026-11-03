@@ -4,7 +4,7 @@
    the table is NORMALISED (p = weight / total x 100) and the page shows the normalised values.
    Gems are deducted and the item is granted in ONE save before any animation plays; the roulette is presentation only. */
 CFG.CRATE={COST:3,
-tag:{common:{each:10},rare:{each:6},epic:{each:2.5},legendary:{pot:5}},      // legendary tags share a 5% pot equally (12 tags -> 0.41667% each)
+tag:{common:{each:9.7},rare:{each:6},epic:{each:2.5},legendary:{pot:6.5}},      // v2.5b: legendary tags share a 6.5% pot equally (was 5%; 12 tags -> 0.5417% each), commons trimmed to keep the total at 100
 grad:{rare:{each:12},epic:{each:6},legendary:{each:1.25}}};
 const Crate={
 kinds:{tags:{type:'tag',key:'tag',title:'[TAGS] CRATE',noun:'TAG',label:'TAGS'},grads:{type:'grad',key:'grad',title:'GRADIENTS CRATE',noun:'GRADIENT',label:'GRADIENT'}},

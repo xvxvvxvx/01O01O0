@@ -28,7 +28,8 @@ $('hb-rank').innerHTML=Badge.txt(s.idx)+(s.ready?'<em>RANK-UP READY</em>':'');$(
 tick(){const now=Date.now(),rdy=Daily.ready(now),ms=Daily.readyIn(now);if(Store.d.user){const pt=Store.tickPlaytime(now),pe=$('hb-pt');if(pe)pe.textContent=playtimeTxt(pt)}
 document.querySelectorAll('[data-cd]').forEach(e=>e.textContent=rdy?'READY':hms(ms));
 document.querySelectorAll('[data-spin]').forEach(b=>{const txt=rdy?(b.dataset.spin==='link'?'SPIN ON DAILY REWARD PAGE':'SPIN'):'NEXT SPIN IN '+hms(ms);if(b.textContent!==txt)b.textContent=txt;b.classList.toggle('off',!rdy);if(b.tagName==='BUTTON')b.disabled=!rdy||Wheel.busy});
-const bx=Math.max(0,Store.d.bx-now);document.querySelectorAll('[data-bx]').forEach(e=>e.textContent=bx?`2X bonus active: ${hms(bx).slice(3)} left`:'No active bonus');
+const bx=Math.max(0,Store.d.bx-now);const bxe=$('hb-bx');if(bxe){const sec=Math.ceil(bx/1000);bxe.hidden=!bx;if(bx){const t=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'),te=$('hb-bxt');if(te.textContent!==t)te.textContent=t;bxe.classList.toggle('low',sec<=60)}}   // v2.5b: 2X potion timer beside the name/tag/rank
+document.querySelectorAll('[data-bx]').forEach(e=>e.textContent=bx?`2X bonus active: ${hms(bx).slice(3)} left`:'No active bonus');
 document.querySelectorAll('[data-shop]').forEach(e=>e.textContent=hms(Shop.expires(now)-now));
 document.querySelectorAll('[data-qreset]').forEach(e=>{const l=Quests.nextReset(e.dataset.qreset,now)-now;e.textContent='Resets in '+(e.dataset.qreset==='w'?dhms(l):hmsr(l))});
 if(typeof Pages!=='undefined'&&Pages._tick)Pages._tick(now)},
@@ -103,7 +104,7 @@ Wheel.busy=true;win=k;spin={t0:performance.now(),a0:ang,a1:base+((((360-ctr-off)
 const Dash={
 bar:(t,f)=>`<div class="pb"><i style="width:${Math.min(100,Math.max(0,f*100))}%"></i><span>${t}</span></div>`,
 rankBars(s){return s.max?'':Dash.bar(`$${Econ.fi(s.coin)}/${Econ.fi(s.req.c)} earned`,s.coin/s.req.c)+Dash.bar(`${s.rounds}/${s.req.r} mini-game rounds played`,s.rounds/s.req.r)},
-questBars(sc){Quests.sync();return Quests.list(sc).map(q=>{const p=Quests.prog(sc,q),cl=Quests.claimed(sc,q);return `<div class="qm"><small>${q.name}${cl?' (claimed)':''}</small>${Dash.bar(q.kind==='profit'?`$${Econ.fi(p)}/$${Econ.fi(q.target)}`:q.kind==='time'?`${fdur(p)}/${fdur(q.target)}`:`${p}/${q.target}`,p/q.target)}</div>`}).join('')},
+questBars(sc){Quests.sync();return Quests.list(sc).map(q=>{const p=Quests.prog(sc,q),cl=Quests.claimed(sc,q);return `<div class="qm"><small>${q.name}${q.lv?` <b class="qtl">TIER ${q.lv+1}</b>`:''}${cl?' (claimed)':''}</small>${Dash.bar(q.kind==='profit'?`$${Econ.fi(p)}/$${Econ.fi(q.target)}`:q.kind==='time'?`${fdur(p)}/${fdur(q.target)}`:`${p}/${q.target}`,p/q.target)}</div>`}).join('')},
 home(app){const s=Rank.status();Quests.sync();
 app.innerHTML=`<h2 class="sec">🤖 <span class="gold">Gold</span> Mini-games ›</h2><div class="cards">${LIST.map(([k,n])=>`<a class="card c-${k}" href="#${k}" aria-label="${n}" title="${n}"></a>`).join('')}</div>
 <div class="dash"><section class="dp" aria-label="Your Balance"><h3>💲 Your Balance ›</h3><div class="inner"><div class="wtop"><span class="wi">👛</span><div><small>Current Balance:</small><div class="big2">$<span class="bal"></span> </div><div class="gmrow">${gemIcon(20)} <b class="gembal"></b> Gems</div></div></div>

@@ -61,13 +61,20 @@ const Quests={
 win(now=Date.now()){return{d:Math.floor(now/CFG.QUEST.DAILY_MS),w:Math.floor((now-CFG.QUEST.WEEK_OFFSET_MS)/CFG.QUEST.WEEKLY_MS)}},
 nextReset(scope,now=Date.now()){const w=Quests.win(now);return scope==='d'?(w.d+1)*CFG.QUEST.DAILY_MS:(w.w+1)*CFG.QUEST.WEEKLY_MS+CFG.QUEST.WEEK_OFFSET_MS},
 sync(now=Date.now()){const q=Store.d.q,w=Quests.win(now);let ch=false;if(q.dw!==w.d){q.dw=w.d;q.d=Store.scope(null);ch=true}if(q.ww!==w.w){q.ww=w.w;q.w=Store.scope(null);ch=true}if(ch)Store.save()},
-list(scope){return scope==='d'?CFG.QUEST.daily:CFG.QUEST.weekly},
-prog(scope,qs){const p=Store.d.q[scope].p[qs.kind]||0;return Math.min(qs.target,qs.kind==='profit'?Econ.r2(p):Math.floor(p))},
+/* v2.5b: weekly quests level up. lvOf = current level of a base quest; at() = that level's quest (same id, harder target, more Gems, lv>0). */
+nameOf(kind,t){return kind==='rounds'?`Play ${Econ.fi(t)} minigame rounds`:kind==='profit'?`Earn ${Econ.fi(t)} 01O0coin profit from minigames`:kind==='time'?`Play for ${+(t/3600000).toFixed(1)} hours`:`Rank up ${t} times`},
+lvOf(b){const l=(Store.d.q.w.l&&Store.d.q.w.l[b.kind])|0;return Math.min(l,b.up?b.up.length:0)},
+at(b,lv){if(!lv)return b;const u=b.up[lv-1];return{id:b.id,kind:b.kind,target:u[0],gems:u[1],lv,name:Quests.nameOf(b.kind,u[0])}},
+list(scope){return scope==='d'?CFG.QUEST.daily:CFG.QUEST.weekly.map(b=>Quests.at(b,Quests.lvOf(b)))},
+prog(scope,qs){const s=Store.d.q[scope],p=Math.max(0,(s.p[qs.kind]||0)-((s.b&&s.b[qs.kind])||0));return Math.min(qs.target,qs.kind==='profit'?Econ.r2(p):Math.floor(p))},
 done:(scope,qs)=>Quests.prog(scope,qs)>=qs.target,
 claimed:(scope,qs)=>!!Store.d.q[scope].c[qs.id],
 add(kind,n){Quests.sync();for(const sc of['d','w']){const s=Store.d.q[sc];s.p[kind]=(s.p[kind]||0)+n;for(const qs of Quests.list(sc))if(qs.kind===kind&&!s.n[qs.id]&&Quests.done(sc,qs)){s.n[qs.id]=1;if(typeof App!=='undefined'&&App.toast)App.toast('Quest completed! Claim reward at Quests page.')}}},
 claim(scope,id){Store.load();Quests.sync();const qs=Quests.list(scope).find(x=>x.id===id);if(!qs||!Quests.done(scope,qs)||Quests.claimed(scope,qs))return null;
-Store.d.q[scope].c[id]=1;Store.d.gems+=qs.gems;Store.sync();Store.save();return qs.gems}};
+const s=Store.d.q[scope],base=scope==='w'?CFG.QUEST.weekly.find(b=>b.id===id):null;
+if(base&&base.up&&Quests.lvOf(base)<base.up.length){s.l[base.kind]=Quests.lvOf(base)+1;s.b[base.kind]=s.p[base.kind]||0;delete s.n[id]}   // weekly: a harder quest replaces it at once, progress restarts from 0
+else s.c[id]=1;
+Store.d.gems+=qs.gems;Store.sync();Store.save();return qs.gems}};
 const Shop={
 rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}},
 win:(now=Date.now())=>Math.floor(now/CFG.SHOP.ROTATION_MS),

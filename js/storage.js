@@ -6,7 +6,8 @@ def(){return{user:'',balance:CFG.UNRANKED_START,pw:0,pl:0,g:{},rk:0,rc:0,rq:0,lq
 num(v,fb){return typeof v==='number'&&isFinite(v)?v:fb},
 int(v,fb=0){return Math.max(0,Math.floor(this.num(v,fb)))},
 best(o){return o&&typeof o==='object'&&this.num(o.v,0)>0&&typeof o.g==='string'?{v:o.v,g:o.g}:null},
-scope(o){const s={p:{rounds:0,profit:0,rank:0,time:0},c:{},n:{}};if(o&&typeof o==='object'){for(const k in s.p)s.p[k]=Math.max(0,this.num(o.p&&o.p[k],0));for(const k of['c','n'])if(o[k]&&typeof o[k]==='object')for(const id in o[k])if(o[k][id])s[k][id]=1}return s},
+scope(o){const s={p:{rounds:0,profit:0,rank:0,time:0},c:{},n:{},l:{},b:{}};if(o&&typeof o==='object'){for(const k in s.p){s.p[k]=Math.max(0,this.num(o.p&&o.p[k],0));s.l[k]=Math.max(0,Math.min(9,Math.floor(this.num(o.l&&o.l[k],0))));s.b[k]=Math.min(s.p[k],Math.max(0,this.num(o.b&&o.b[k],0)))}   // v2.5b: l = weekly quest level per kind, b = progress baseline when that level began
+for(const k of['c','n'])if(o[k]&&typeof o[k]==='object')for(const id in o[k])if(o[k][id])s[k][id]=1}return s},
 /* ---- integrity ---- */
 hash(s){let h1=0xdeadbeef,h2=0x41c6ce57;const t='01O0|2.25|'+s;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
 h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return(h2>>>0).toString(36)+'-'+(h1>>>0).toString(36)},
