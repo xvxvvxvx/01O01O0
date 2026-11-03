@@ -38,9 +38,9 @@ t('cannot sell a duplicate that was never rolled',!Crate.sellDup('t_beast').ok);
 // ---- Cases presentation events
 const C=Games.cases,mk=k=>({r:{k},m:1}),det=()=>.5;
 t('tip-over tease chance is 60% (was 80%)',C.TEASE_P===.6);
-t('Common/Uncommon results never get fake/tip events',['Common','Uncommon'].every(k=>{for(let i=0;i<2000;i++){const p=C.present(mk(k),Math.random);if(p.fake||p.tip)return false}return true}));
+t('Common/Uncommon results never get tip-overs; their only fake is the rare X-look flip',['Common','Uncommon'].every(k=>{for(let i=0;i<20000;i++){const p=C.present(mk(k),Math.random);if(p.tip||(p.fake&&p.look!=='X'))return false}return true}));
 {const N=200000;let f=0,ti=0,both=0;for(let i=0;i<N;i++){const p=C.present(mk('Rare'),Math.random);f+=p.fake;ti+=p.tip;both+=p.fake&&p.tip}
-t(`Rare+ results: fake ~${C.FAKE_P*100}%, tip ~${(C.TIP_P*(1-C.FAKE_P)*100).toFixed(1)}%, never both (${(f/N*100).toFixed(1)}% / ${(ti/N*100).toFixed(1)}%)`,Math.abs(f/N-C.FAKE_P)<.005&&Math.abs(ti/N-C.TIP_P*(1-C.FAKE_P))<.005&&both===0);
+const fe=C.XUP_P+(1-C.XUP_P)*C.FAKE_P,te=(1-C.XUP_P)*(1-C.FAKE_P)*C.TIP_P;t(`Rare+ results: fake ~${(fe*100).toFixed(1)}%, tip ~${(te*100).toFixed(1)}%, never both (${(f/N*100).toFixed(1)}% / ${(ti/N*100).toFixed(1)}%)`,Math.abs(f/N-fe)<.005&&Math.abs(ti/N-te)<.005&&both===0);
 t('events stay rare overall (<3% of all spins)',(f+ti)/N*.08<.03)}
 t('dev force: fake / tip are deterministic and exclusive',C.present(mk('Mythic'),det,{fake:1}).fake&&!C.present(mk('Mythic'),det,{fake:1}).tip&&C.present(mk('Rare'),det,{tip:1}).tip&&!C.present(mk('Rare'),det,{tip:1}).fake&&!C.present(mk('Common'),det,{fake:1}).fake);
 {const m={x0:0,xA:-5114-114,xT:-5114,dur:6500,tease:2400};let ok=C.pos(6500,m)===m.xA&&C.pos(8900,m)===m.xT&&C.pos(9999,m)===m.xT,pv=C.pos(6500,m),mono=true;for(let ms=6500;ms<=8900;ms+=20){const x=C.pos(ms,m);if(x<pv-1e-9)mono=false;pv=x}
@@ -58,5 +58,16 @@ Object.assign(H,{g:{},lock:0});x=60000;const gaps=[310,420,275,560,390,330,480,2
 Object.assign(H,{g:{},lock:0});Guard.mark(true,false,90000);Guard.take('D',90000);Guard.mark(true,false,90030);t('two wagers < 60 ms apart: the second is dropped (double-fire)',!Guard.take('D',90030).ok)}
 // ---- Aviamasters tuning
 {const P=Games.aviamasters.plan,N=800000;let s=0,w=0;for(let i=0;i<N;i++){const p=P();if(!p.crash&&!p.fall){s+=p.m;w++}}const rtp=s/N;
-t(`Aviamasters RTP is competitive but below 100% (${(rtp*100).toFixed(1)}%, wins ${(w/N*100).toFixed(0)}%)`,rtp>.92&&rtp<1.0&&Games.aviamasters.PR===.51)}
+{let pf=0;for(let i=0;i<N;i++){const p=P();if(!p.crash&&!p.fall&&p.m>1)pf++}t(`v2.5 Aviamasters economy: RTP ~99% (${(rtp*100).toFixed(1)}%), lands ${(w/N*100).toFixed(0)}%, profit ${(pf/N*100).toFixed(0)}%`,Math.abs(rtp-.99)<.04&&pf/N>.41&&pf/N<.48&&w/N>.88&&Games.aviamasters.PR===.3)}}
+// ---- v2.5 Cases X outcome
+{const RA=C.RAR,sp=RA.reduce((a,r)=>a+r.p,0),sd=RA.reduce((a,r)=>a+r.d,0),g=k=>RA.find(r=>r.k===k);
+t('v2.5 Cases rolled odds: X31.5/C20/U27/R13/L5.2/M2.6/S0.7',RA.map(r=>r.k+r.p).join()==='X31.5,Common20,Uncommon27,Rare13,Legendary5.2,Mythic2.6,Secret0.7'&&Math.abs(sp-100)<1e-9);
+t('v2.5 Cases DISPLAYED odds: X26/C25/U27/R13/L5/M3/S1 (total 100)',RA.map(r=>r.k+r.d).join()==='X26,Common25,Uncommon27,Rare13,Legendary5,Mythic3,Secret1'&&sd===100);
+t('X is a red 0x outcome',g('X').zero===1&&g('X').min===0&&g('X').max===0&&g('X').c==='#ef4444');
+{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.5 Cases economy: RTP ~95% ('+(rtp*100).toFixed(0)+'%), 48.5% of rounds in profit',Math.abs(rtp-.95)<.02&&Math.abs(pr-48.5)<1e-9)}
+t('X flips are rare (<=6%)',C.XDOWN_P<=.06&&C.XUP_P<=.06);
+const XP=k=>{let f=0,n=100000;for(let i=0;i<n;i++){const p=C.present(mk(k),Math.random);if(p.fake)f++}return f/n};
+t('X is shown as Common/Uncommon/Rare then flips (~'+C.XDOWN_P*100+'%)',Math.abs(XP('X')-C.XDOWN_P)<.006);
+{const L={};for(let i=0;i<20000;i++){const p=C.present(mk('X'),()=>Math.random());if(p.fake)L[p.look]=1}t('X flip looks are only Common/Uncommon/Rare',Object.keys(L).every(k=>['Common','Uncommon','Rare'].includes(k))&&Object.keys(L).length===3)}
+t('non-X results are sometimes shown as X first (~'+C.XUP_P*100+'%), look=X',(()=>{let f=0,n=100000,okl=true;for(let i=0;i<n;i++){const p=C.present(mk('Common'),Math.random);if(p.fake){f++;if(p.look!=='X')okl=false}}return okl&&Math.abs(f/n-C.XUP_P)<.006})())}
 console.log(`\n${pass} passed, ${fail} failed`);process.exit(fail?1:0);

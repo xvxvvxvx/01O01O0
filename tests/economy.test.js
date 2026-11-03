@@ -8,9 +8,9 @@ const realLoad=Store.load.bind(Store);Store.load=()=>Store.d;   // tests keep st
 let pass=0,fail=0;const t=(n,ok,x='')=>{ok?pass++:fail++;console.log((ok?'PASS ':'FAIL ')+n+(x?'  '+x:''))};const near=(a,b)=>Math.abs(a-b)<1e-9;
 const fresh=()=>{Store.d=Store.def();Store.d.user='t';toasts.length=0};const R=CFG.RANKS;
 // ---- ranks
-const reqs=[[2500,50],[5000,60],[7500,90],[10000,100],[15000,200],[20000,300],[50000,400],[75000,600],[100000,750],[150000,1000]],rw=[[50,1],[100,2],[250,3],[250,4],[250,5],[250,6],[250,7],[500,8],[500,10],[750,12]];
+const reqs=[[250,50],[800,60],[2500,90],[5000,100],[9000,200],[14000,300],[20000,400],[30000,600],[50000,750],[70000,1000]],rw=[[50,1],[100,2],[250,3],[250,4],[250,5],[250,6],[250,7],[500,8],[500,10],[750,12]];
 t('rank order Unranked..Extreme Demon',R.map(r=>r.n).join()==='Unranked,Copper,Bronze,Silver,Iron,Ruby,Emerald,Amethyst,Diamond,Ascended,Verifier I,Verifier II,Verifier III,Champion I,Champion II,Champion III,Radiant I,Radiant II,Radiant III,Insane Demon I,Insane Demon II,Extreme Demon'&&R[21].req===null&&R.slice(0,21).every(r=>r.req));
-const exp=[[155000,1000],[175000,1000],[200000,1000],[215000,1250],[230000,1250],[300000,1500],[330000,1500],[400000,1500],[420000,1750],[500000,2000],[530000,2000]],exr=[[750,12],[750,12],[750,12],[1250,14],[1250,14],[1250,14],[1500,16],[1500,16],[1500,16],[1750,18],[1750,18],[2000,20]];
+const exp=[[80000,1000],[90000,1000],[100000,1000],[130000,1250],[145000,1250],[170000,1500],[190000,1500],[210000,1500],[240000,1750],[280000,2000],[300000,2000]],exr=[[750,12],[750,12],[750,12],[1250,14],[1250,14],[1250,14],[1500,16],[1500,16],[1500,16],[1750,18],[1750,18],[2000,20]];
 t('expansion requirements + rewards match the reference',exp.every(([c,r],i)=>R[10+i].req.c===c&&R[10+i].req.r===r)&&exr.every(([c,g],i)=>R[10+i].rw.c===c&&R[10+i].rw.g===g));
 t('rank-up requirements match the table',reqs.every(([c,r],i)=>R[i].req.c===c&&R[i].req.r===r));
 t('rank-up rewards (starting Steakcoin + Gems) match the table',rw.every(([c,g],i)=>R[i+1].rw.c===c&&R[i+1].rw.g===g));
@@ -38,7 +38,7 @@ fresh();const T0=1e12;t('claim once, second refused, allowed after 24h',!!Daily.
 fresh();Store.d.rk=0;Store.d.rc=2500;Store.d.rq=50;Store.d.balance=9999;Store.d.lq=40;Store.d.gems=5;Store.d.inv=['t_larper'];const r1=Rank.rankUp(),r2=Rank.rankUp();
 t('rank-up: Copper, balance=$50, +1 Gem, once only',r1&&!r2&&Store.d.rk===1&&Store.d.balance===50&&Store.d.gems===6);t('rank-up keeps lifetime stats + cosmetics, clears rank progress',Store.d.lq===40&&Store.d.inv.length===1&&Store.d.rc===0&&Store.d.rq===0);
 let allr=true;for(let i=0;i<10;i++){fresh();Store.d.rk=i;Store.d.rc=R[i].req.c;Store.d.rq=R[i].req.r;Store.d.gems=0;const o=Rank.rankUp();if(!o||Store.d.balance!==R[i+1].rw.c||Store.d.gems!==R[i+1].rw.g)allr=false}t('every rank-up grants its exact cash + gems',allr);
-fresh();Store.d.rc=2499.99;Store.d.rq=50;t('not eligible at $2,499.99',!Rank.status().ready);Store.d.rc=2500;Store.d.rq=49;t('not eligible at 49 rounds',!Rank.status().ready);
+fresh();Store.d.rc=249.99;Store.d.rq=50;t('not eligible at $249.99',!Rank.status().ready);Store.d.rc=250;Store.d.rq=49;t('not eligible at 49 rounds',!Rank.status().ready);
 fresh();Store.d.rk=21;Store.d.rc=1e9;Store.d.rq=1e9;t('Extreme Demon cannot rank up',Rank.rankUp()===null);
 fresh();Store.d.rk=3;Econ.resetBalance();t('Reset Balance uses the rank starting cash (Silver $250)',Store.d.balance===250&&Store.d.gems===0);fresh();Econ.resetBalance();t('Reset Balance Unranked = configurable default, no gems',Store.d.balance===CFG.UNRANKED_START&&Store.d.gems===0);
 fresh();Store.d.rk=2;Store.d.balance=5;Econ.resetBalance();t('reset does not change rank/progress or count as earnings',Store.d.rk===2&&Store.d.rc===0);
@@ -82,7 +82,7 @@ t('~1h of ticks completes the daily playtime quest but not the weekly 5h one',Qu
 {const b=Quests.prog('w',WQ[3]);Store.tickPlaytime(tn+100);Store.questTime(0,true);t('a tick <0.9 s after the last one adds no quest time (no double count)',Quests.prog('w',WQ[3])===b)}
 fresh();Quests.claim('d','d_t1h');t('unfinished playtime quest cannot be claimed',Quests.claim('d','d_t1h')===null);
 fresh();Econ.settle('MINES',1,1);const base=Date.now();Quests.sync(base+25*3600e3);t('daily quests reset after 24h; weekly persist',Store.d.q.d.p.rounds===0&&Store.d.q.w.p.rounds===1);Quests.sync(base+8*86400e3);t('weekly quests reset after 7 days',Store.d.q.w.p.rounds===0);
-t('quest definitions match spec (v2.4)',CFG.QUEST.daily.map(x=>x.kind+':'+x.target+':'+x.gems).join()==='rounds:500:2,profit:10000:3,time:3600000:2'&&CFG.QUEST.weekly.map(x=>x.kind+':'+x.target+':'+x.gems).join()==='rounds:4000:3,profit:100000:2,rank:5:2,time:18000000:2');
+t('quest definitions match spec (v2.4)',CFG.QUEST.daily.map(x=>x.kind+':'+x.target+':'+x.gems).join()==='rounds:500:2,profit:2500:3,time:3600000:2'&&CFG.QUEST.weekly.map(x=>x.kind+':'+x.target+':'+x.gems).join()==='rounds:4000:3,profit:20000:2,rank:5:2,time:18000000:2');
 // ---- Guess the Cup
 const cu={0:0,1:0,2:0};for(let i=0;i<300000;i++)cu[Games.guessthecup.pick()]++;t('each cup has a 1-in-3 chance',[0,1,2].every(i=>Math.abs(cu[i]/300000-1/3)<.006));
 fresh();Store.d.balance-=10;const cp=Econ.settle('GUESS THE CUP',10,10*CUP_WIN_MULT);t('correct guess pays 2.5x TOTAL (stake included): bet 10 -> 25',CUP_WIN_MULT===2.5&&cp===25);t('theoretical return = 83.33%',Math.abs(CUP_WIN_MULT/3-.8333)<.001);
