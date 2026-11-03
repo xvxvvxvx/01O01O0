@@ -20,10 +20,10 @@ t('new cosmetics exist with the requested rarity',Object.entries(want).every(([i
 t('new legendaries carry a themed effect class; epic/legendary keep the shared particle classes',['t_light','t_orbit','t_andromeda','t_slaughter','g_light','g_orbit','g_andromeda'].every(id=>new RegExp(' cx-'+Cos.by(id).fx+' fxl"').test(Cos.html(Cos.by(id))))&&/ fxe"/.test(Cos.html(Cos.by('t_manip')))&&!/cx-/.test(Cos.html(Cos.by('t_manip'))));
 t('every Epic/Legendary still gets VFX colours; others none',COS.every(c=>{const h=Cos.html(c);return(c.rar==='epic'?/ fxe"/.test(h):c.rar==='legendary'?/ fxl"/.test(h):!/fx[el]"/.test(h))&&((c.rar==='epic'||c.rar==='legendary')?/--p1:#[0-9a-f]{6};--p2:#[0-9a-f]{6};--p3:#[0-9a-f]{6}/.test(h):true)}));
 // ---- crate odds
-for(const [k,exp] of [['tags',{common:10,rare:6,epic:2.5,legendary:5/12}],['grads',{rare:12,epic:6,legendary:1.25}]]){const tb=Crate.table(k);
+for(const [k,exp] of [['tags',{common:9.7,rare:6,epic:2.5,legendary:6.5/12}],['grads',{rare:12,epic:6,legendary:1.25}]]){const tb=Crate.table(k);
 t(k+': per-item chances match the spec',tb.every(r=>near(r.p,exp[r.c.rar],1e-9)));t(k+': chances total exactly 100%',near(tb.reduce((a,r)=>a+r.p,0),100,1e-9))}
-t('rarity totals shown on the page: tags 50/30/15/5, gradients 0/60/30/10',(()=>{const a=Crate.totals('tags'),b=Crate.totals('grads');return[a.common,a.rare,a.epic,a.legendary,b.common,b.rare,b.epic,b.legendary].map(x=>Math.round(x*1e6)/1e6).join()==='50,30,15,5,0,60,30,10'})());
-{const N=300000;for(const [k,exp] of [['tags',[50,30,15,5]],['grads',[0,60,30,10]]]){const c={common:0,rare:0,epic:0,legendary:0};for(let i=0;i<N;i++)c[Crate.pick(k).rar]++;
+t('rarity totals shown on the page: tags 48.5/30/15/6.5, gradients 0/60/30/10',(()=>{const a=Crate.totals('tags'),b=Crate.totals('grads');return[a.common,a.rare,a.epic,a.legendary,b.common,b.rare,b.epic,b.legendary].map(x=>Math.round(x*1e6)/1e6).join()==='48.5,30,15,6.5,0,60,30,10'})());
+{const N=300000;for(const [k,exp] of [['tags',[48.5,30,15,6.5]],['grads',[0,60,30,10]]]){const c={common:0,rare:0,epic:0,legendary:0};for(let i=0;i<N;i++)c[Crate.pick(k).rar]++;
 t(k+': rolled rarity rates match displayed odds ('+Object.values(c).map(v=>(v/N*100).toFixed(1)).join('/')+')',Crate.RARS.every((r,i)=>Math.abs(c[r]/N*100-exp[i])<.5))}}
 {const C0=CFG.CRATE.tag.common.each;CFG.CRATE.tag.common.each=20;const tb=Crate.table('tags');t('if weights are edited the table is normalised and still totals 100',near(tb.reduce((a,r)=>a+r.p,0),100,1e-9));CFG.CRATE.tag.common.each=C0}
 // ---- opening, duplicates, resale
@@ -64,7 +64,7 @@ Object.assign(H,{g:{},lock:0});Guard.mark(true,false,90000);Guard.take('D',90000
 t('v2.5 Cases rolled odds: X31.5/C20/U27/R13/L5.2/M2.6/S0.7',RA.map(r=>r.k+r.p).join()==='X31.5,Common20,Uncommon27,Rare13,Legendary5.2,Mythic2.6,Secret0.7'&&Math.abs(sp-100)<1e-9);
 t('v2.5 Cases DISPLAYED odds: X26/C25/U27/R13/L5/M3/S1 (total 100)',RA.map(r=>r.k+r.d).join()==='X26,Common25,Uncommon27,Rare13,Legendary5,Mythic3,Secret1'&&sd===100);
 t('X is a red 0x outcome',g('X').zero===1&&g('X').min===0&&g('X').max===0&&g('X').c==='#ef4444');
-{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.5 Cases economy: RTP ~95% ('+(rtp*100).toFixed(0)+'%), 48.5% of rounds in profit',Math.abs(rtp-.95)<.02&&Math.abs(pr-48.5)<1e-9)}
+{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.5 Cases economy: RTP ~99% ('+(rtp*100).toFixed(0)+'%), 48.5% of rounds in profit',Math.abs(rtp-.99)<.02&&Math.abs(pr-48.5)<1e-9)}
 t('X flips are rare (<=6%)',C.XDOWN_P<=.06&&C.XUP_P<=.06);
 const XP=k=>{let f=0,n=100000;for(let i=0;i<n;i++){const p=C.present(mk(k),Math.random);if(p.fake)f++}return f/n};
 t('X is shown as Common/Uncommon/Rare then flips (~'+C.XDOWN_P*100+'%)',Math.abs(XP('X')-C.XDOWN_P)<.006);
