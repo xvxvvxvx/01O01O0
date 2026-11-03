@@ -1,8 +1,3 @@
-/* v2.3 DEVELOPER MODE (testing only). NOT part of the production file list: loader.js requests this file only for ?dev=1 on localhost / 127.0.0.1 / file://.
-   Delete this file from production deployments. It changes nothing unless it is loaded, and re-checks the host itself.
-   Controls (small panel, bottom-left):  +999 Gems | arm FAKE COMMON | arm TIP-OVER (rollback).
-   Armed events fire on the NEXT Cases spin, once, deterministically (the result is re-rolled from the Rare+ pool so the reveal is a real Rare/Legendary/Mythic/Secret).
-   URL shortcuts: ?dev=1&force=fake  or  ?dev=1&force=tip  pre-arms that event for the first Cases spin.  Normal odds are untouched whenever nothing is armed. */
 (()=>{const h=location.hostname,LOCAL=location.protocol==='file:'||['localhost','127.0.0.1','[::1]',''].includes(h);
 if(!LOCAL||!/[?&]dev=1(&|$)/.test(location.search))return;
 const C=Games.cases,force=(location.search.match(/[?&]force=(fake|tip)/)||[])[1];C.dev={fake:force==='fake'?1:0,tip:force==='tip'?1:0};
