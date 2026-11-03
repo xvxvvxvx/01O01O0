@@ -1,14 +1,15 @@
 Games.cases=(()=>{
-// v2.5: new 0x "X" outcome. Real odds (p): X 30 / Common 20 / Uncommon 27 / Rare 13 / Legendary 6 / Mythic 3 / Secret 1. The "Case Odds" list shows d: X 25 / Common 25 / Uncommon 27 / Rare 13 / Legendary 6 / Mythic 3 / Secret 1.
+// v2.5 economy: multiplier ranges (Common .2-.8x, Uncommon 1-1.25x, Rare 1.3-2x, Legendary 2.4-3.4x, Mythic 3.8-5.4x, Secret 6-11x) give a ~95% return with 50% of rounds in profit (original game: ~187%).
+// v2.5: new 0x "X" outcome. Real odds (p): X 31.5 / Common 20 / Uncommon 27 / Rare 13 / Legendary 5.2 / Mythic 2.6 / Secret 0.7 (~95% return, 48.5% of rounds in profit). The "Case Odds" list shows d: X 26 / Common 25 / Uncommon 27 / Rare 13 / Legendary 5 / Mythic 3 / Secret 1.
 // ---- Odds config: p = percent actually rolled (one decimal place max, must total 100); d = percent shown in the "Case Odds" list (display text only); fx = VFX colour ----
 const RAR = [
-  { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 30,  d: 25, zero: 1 },
-  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .25, max: 1,   p: 20,  d: 25 },
-  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 3,   p: 27,  d: 27 },
-  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 3,   max: 15,  p: 13,  d: 13 },
-  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 15,  max: 25,  p: 6,   d: 6,  fx: '#fbbf24' },
-  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 25,  max: 50,  p: 3,   d: 3,  fx: '#ef4444' },
-  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 50, max: 100, p: 1, d: 1, fx: '#e5e7eb' }
+  { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 31.5,d: 26, zero: 1 },
+  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .2,  max: .8,  p: 20,  d: 25 },
+  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.25,p: 27,  d: 27 },
+  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.3, max: 2,   p: 13,  d: 13 },
+  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 2.4, max: 3.4, p: 5.2, d: 5,  fx: '#fbbf24' },
+  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 3.8, max: 5.4, p: 2.6, d: 3,  fx: '#ef4444' },
+  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 6, max: 11, p: .7, d: 1, fx: '#e5e7eb' }
 ];const LIFE=['Legendary','Mythic','Secret'],LOCK_BEAT=3000;
 /* Presentation-only events. They are decided AFTER the real result is rolled and never change it, the payout, or the odds:
    TEASE_P (v2.3: 60%, was 80%) = chance a Legendary+ neighbour of a Common/Uncommon result triggers the near-miss rollback.
