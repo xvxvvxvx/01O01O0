@@ -105,7 +105,7 @@ bar:(t,f)=>`<div class="pb"><i style="width:${Math.min(100,Math.max(0,f*100))}%"
 rankBars(s){return s.max?'':Dash.bar(`$${Econ.fi(s.coin)}/${Econ.fi(s.req.c)} earned`,s.coin/s.req.c)+Dash.bar(`${s.rounds}/${s.req.r} mini-game rounds played`,s.rounds/s.req.r)},
 questBars(sc){Quests.sync();return Quests.list(sc).map(q=>{const p=Quests.prog(sc,q),cl=Quests.claimed(sc,q);return `<div class="qm"><small>${q.name}${cl?' (claimed)':''}</small>${Dash.bar(q.kind==='profit'?`$${Econ.fi(p)}/$${Econ.fi(q.target)}`:q.kind==='time'?`${fdur(p)}/${fdur(q.target)}`:`${p}/${q.target}`,p/q.target)}</div>`}).join('')},
 home(app){const s=Rank.status();Quests.sync();
-app.innerHTML=`<h2 class="sec">🤖 <span class="au">Gold</span> Mini-games ›</h2><div class="cards">${LIST.map(([k,n])=>`<a class="card c-${k}" href="#${k}" aria-label="${n}" title="${n}"></a>`).join('')}</div>
+app.innerHTML=`<h2 class="sec">🤖 <span class="gold">Gold</span> Mini-games ›</h2><div class="cards">${LIST.map(([k,n])=>`<a class="card c-${k}" href="#${k}" aria-label="${n}" title="${n}"></a>`).join('')}</div>
 <div class="dash"><section class="dp" aria-label="Your Balance"><h3>💲 Your Balance ›</h3><div class="inner"><div class="wtop"><span class="wi">👛</span><div><small>Current Balance:</small><div class="big2">$<span class="bal"></span> </div><div class="gmrow">${gemIcon(20)} <b class="gembal"></b> Gems</div></div></div>
 <div class="who">${Cos.user(esc(Store.d.user),Store.d.eq.grad)} ${Store.d.eq.tag?Cos.html(Cos.by(Store.d.eq.tag)):'<span class="notag">[NO TAG]</span>'}</div>
 <div id="rsw"><button class="pillbtn sm" id="rs">Click to reset back to $${Econ.fi(Econ.startBalance())}</button></div><div class="stats">${Stats.html()}</div></div></section>

@@ -54,7 +54,7 @@ if(p){this.cur=p.mount($('app'))||null;this.bal();return}
 if(!g){this.cur=Dash.home($('app'))||null;this.bal();return}
 $('app').innerHTML=`<h2 class="gt">&lt; ${g.title} &gt;</h2><div class="frame" id="gm"></div>`;
 this.cur=g.mount($('gm'))||null;this.bal()},
-welcome(){Shell.show(false);$('app').innerHTML='<section class="welcome"><h1>Welcome to <span class="au">Au</span> 🤖</h1><input id="gu" placeholder="Type username here…" maxlength="16" autofocus><button id="gb" class="pillbtn">Continue…</button></section>';
+welcome(){Shell.show(false);$('app').innerHTML='<section class="welcome"><h1>Welcome to <span class="gold">Gold</span> 🤖</h1><input id="gu" placeholder="Type username here…" maxlength="16" autofocus><button id="gb" class="pillbtn">Continue…</button></section>';
 const go=()=>{if(this.setUser($('gu').value)){location.hash='';this.route()}else this.toast('Type a username first')};
 $('gb').onclick=go;$('gu').onkeydown=e=>{if(e.key==='Enter')go()}},
 init(){document.addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const i=b.parentElement.querySelector('.bet');i.value=Math.max(+i.min||0.01,Math.floor(i.value*b.dataset.m*100)/100)});
