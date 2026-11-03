@@ -21,6 +21,12 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 - **Aviamasters** RTP ~96.8% -> ~98.3% (lower runway-slide chances; rocket/item odds unchanged).
 - **Anti-macro**: `guard.js` now analyses every trusted click (including ones ignored during a Cases spin), catches fast/regular autoclickers, escalates the cool-down and keeps it across refreshes.
 
+## Update 2.5
+- **Renamed to Gold**: the logo, page title, welcome heading and home heading now read "Gold" in an animated gold gradient (`css/update25.css`). The calculator easter egg is still `0 - 100 =`.
+- **Cases**: new red **X** outcome (0x payout) drawn as a small X on the tile. Rolled odds: X 31.5% / Common 20% / Uncommon 27% / Rare 13% / Legendary 5.2% / Mythic 2.6% / Secret 0.7%. The Case Odds list shows X 26% / Common 25% / Uncommon 27% / Rare 13% / Legendary 5% / Mythic 3% / Secret 1%. Multiplier ranges: Common .2-.8x / Uncommon 1-1.25x / Rare 1.3-2x / Legendary 2.4-3.4x / Mythic 3.8-5.4x / Secret 6-11x (~95% return, 48.5% of rounds in profit; the original game returned ~187%). Rare flips (presentation only): a real X can first appear as a Common/Uncommon/Rare tile (6%) and a non-X result can first appear as an X (4%); the tile flips over to the real result.
+- **Aviamasters**: win rate raised to sit next to Cases (91% of flights land, ~44% finish in profit; rocket chance .3, items +.4/+.8/+2/+4 and x1.3/x1.6/x1.9, multiplier growth slows above 2x) while the return is ~99%. Landing below 1x is a loss: the multiplier and the history chip are red, no confetti.
+- **Economy rebalance**: both games now return about 95-99%, so balances no longer compound. Rank-up money requirements re-curved from 2,500 - 7,000,000 down to 250 - 1,100,000 (round counts unchanged), daily profit quest 10,000 -> 2,500, weekly profit quest 100,000 -> 20,000.
+
 ## Latest changes
 - **Right Shift** (tap it on its own) toggles between the calculator and the game instead of Backspace. Backspace is now always the calculator's delete key. The tip in the game header says so.
 - **Calculator page**: light/dark mode switch (remembered in `localStorage`), a right-hand side bar with an interactive periodic table (`js/ptable.js`). Clicking the Gold (Au) element opens the game, the same way `0 - 100 =` does.
