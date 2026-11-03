@@ -111,7 +111,7 @@ if(!Lock.acquire('CASES')){App.toast('Another tab is wagering on Cases. Wait for
 const bet=App.bet(el,'CASES',1);if(!bet){Lock.release('CASES');return}
 busy=true;clearInterval(hb);hb=setInterval(()=>{if(!Lock.beat('CASES'))Lock.acquire('CASES')},LOCK_BEAT);
 /* 1) the real result is rolled first (unchanged RNG). 2) only then is its presentation chosen. */
-const dev=api.dev;let o=roll(),pr;if(dev&&(dev.fake||dev.tip)){o=rollReal();pr=present(o,rnd,dev);if(pr.fake)dev.fake=0;else dev.tip=0}else pr=present(o,rnd);
+const dev=api.dev;let o=roll(),pr,frc=false;if(dev&&dev.rar&&dev.left>0){o=lookOf(dev.rar);frc=true;if(--dev.left<=0){dev.rar=null;dev.left=0}}if(!frc&&dev&&(dev.fake||dev.tip)){o=rollReal();pr=present(o,rnd,dev);if(pr.fake)dev.fake=0;else dev.tip=0}else pr=present(o,rnd);
 rd={bet,o,settled:false,finished:false,fake:pr.fake,tip:pr.tip};go.disabled=true;go.textContent='Opening…';br.classList.add('dis');bi.disabled=true;
 rs.innerHTML=`Wager placed: <b>$${App.f(bet)}</b>. Opening case…`;prev=arr[sel]||prev;build(rd.fake?lookOf(pr.look||'Common'):rd.o,rd.tip?commonLook():null);
 const spd=spinSpeed(Store.d.rk);let hi=rd.fake||rd.tip?-1:teaseIdx(arr,WIN,rd.o);if(hi>=0&&rnd()>=TEASE_P)hi=-1;
