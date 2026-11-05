@@ -2,7 +2,7 @@ const Store={key:'0-100_v2.4',tpKey:'0-100_v2.4_playtime',d:null,
 armed:typeof document!=='undefined',          // integrity checks on in the browser (off in the node unit tests unless a test arms them)
 LEGACY_MIGRATION:true,                        // accept ONE unsigned 2.0 save (clamped). Set to false in a later update once players have migrated.
 tamper:0,notice:'',sh:{o:null,b:0,g:0},
-def(){return{user:'',balance:CFG.UNRANKED_START,pw:0,pl:0,g:{},rk:0,rc:0,rq:0,lq:0,pt:{},bw:null,bl:null,dl:0,dr:null,dc:true,bx:0,ndp:false,cc:{Legendary:0,Mythic:0,Secret:0},cs:0,gems:0,inv:[],paid:{},eq:{tag:null,grad:null},shop:null,shopSalt:0,q:{dw:-1,ww:-1,d:Store.scope(null),w:Store.scope(null)}}},
+def(){return{user:'',balance:CFG.UNRANKED_START,pw:0,pl:0,g:{},rk:0,rc:0,rq:0,lq:0,pt:{},bw:null,bl:null,dl:0,dr:null,dc:true,bx:0,ndp:false,cc:{Legendary:0,Mythic:0,Secret:0,Pirate:0},cs:0,gems:0,inv:[],paid:{},eq:{tag:null,grad:null},shop:null,shopSalt:0,q:{dw:-1,ww:-1,d:Store.scope(null),w:Store.scope(null)}}},
 num(v,fb){return typeof v==='number'&&isFinite(v)?v:fb},
 int(v,fb=0){return Math.max(0,Math.floor(this.num(v,fb)))},
 best(o){return o&&typeof o==='object'&&this.num(o.v,0)>0&&typeof o.g==='string'?{v:o.v,g:o.g}:null},
