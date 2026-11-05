@@ -30,6 +30,13 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 - **Quests**: Gem rewards buffed (daily 2/3/2 -> 3/4/3, weekly 3/2/2/2 -> 5/4/4/4). Weekly quests now level up: claiming one immediately replaces it with a harder one (up to 5 extra levels, e.g. Play 4,000 rounds -> 7,000 -> 11,000 -> 16,000 -> 22,000 -> 30,000 paying 5 -> 7 -> 10 -> 14 -> 18 -> 24 Gems; progress restarts from 0 at each level, everything resets with the week). The new quest pops in with a flip-in animation, a TIER badge and a NEW QUEST! tag; a quest that becomes complete plays a check-mark and confetti burst (all animations respect reduced-motion).
 - **2X coin boost timer**: while the Daily Spin 2X bonus is active a glowing `2X mm:ss` countdown shows to the left of your name, tag and rank in the header (turns red in the last minute).
 
+## Update 2.7 (Pirate Token)
+- **Cases: new rarity "Pirate Token"**, rarer than Secret. Rolled 0.2% (taken from X: now 31.3%), pays **100-150x**, shown as 0.2% in the Case Odds list (Secret is now shown as 0.8% so the list still totals 100). Drawn in an animated gold gradient on the tile, the odds line and the past-roll chip; gold coins rise out of the tile as the strip rolls past it and spray over the strip when it lands.
+- **Pirate Token cinematic**: after a Pirate Token round is paid, a full-screen scene plays: a chest drops in, shakes, opens with a light beam, coins explode out of it and overflow, then a gold medal appears with the text "PIRATE TOKEN / NEW RARITY ACHIEVED". Skip / Continue / Esc / Enter close it; the wager button stays locked until it closes. Respects reduced-motion. Test it: `Games.cases.dev={rar:'Pirate',left:1}` in the console on a dev build.
+- Icon: `img/case-pirate.jpg` is a white placeholder, replace the file and keep the name. `case-pirate.jpg`, `champion.jpg` and `radiant.jpg` are now in the offline cache (`sw.js`).
+- Lifetime Pirate Token counter added to the Cases header (saved in `cc.Pirate`).
+- **Economy note**: a 0.2% x 125x average adds about 25 points of return, so Cases now returns about 125.8% (was 100.8%) and 48.7% of rounds are in profit. Tests updated accordingly (`tests/update27.test.js` is new).
+
 ## Latest changes
 - **Right Shift** (tap it on its own) toggles between the calculator and the game instead of Backspace. Backspace is now always the calculator's delete key. The tip in the game header says so.
 - **Calculator page**: light/dark mode switch (remembered in `localStorage`), a right-hand side bar with an interactive periodic table (`js/ptable.js`). Clicking the Gold (Au) element opens the game, the same way `0 - 100 =` does.
