@@ -1,4 +1,5 @@
 Games.cases=(()=>{
+// v2.6c: base spin is faster: DUR 6500 -> 5000 ms (1.5 s quicker before rank speed). Odds, payouts and tease/tip/flip logic are unchanged.
 // v2.6b economy: Secret pays 6-30x and the other tiers were raised for a higher payout: Common .3-.85x, Uncommon 1-1.25x, Rare 1.35-1.8x, Legendary 2.4-3.3x, Mythic 3.6-4.9x. Return ~100.8% (was 99.2%) with the odds unchanged and 48.5% of rounds in profit; the edge is thin, so money still comes from long grinding (rank money counts only positive round profits).
 // v2.5: new 0x "X" outcome. Real odds (p): X 31.5 / Common 20 / Uncommon 27 / Rare 13 / Legendary 5.2 / Mythic 2.6 / Secret 0.7. The "Case Odds" list shows d: X 26 / Common 25 / Uncommon 27 / Rare 13 / Legendary 5 / Mythic 3 / Secret 1.
 // ---- Odds config: p = percent actually rolled (one decimal place max, must total 100); d = percent shown in the "Case Odds" list (display text only); fx = VFX colour ----
@@ -18,7 +19,7 @@ const TEASE_P=.6,FAKE_P=.12,TIP_P=.15,MIN_REAL=3,FLIP_MS=900,XDOWN_P=.06,XUP_P=.
 /* v2.5 X flips (presentation only, rare): XDOWN_P = chance a real X is first shown as a Common/Uncommon/Rare tile that flips over to the X; XUP_P = chance a non-X result is first shown as an X that flips over to its real (better) rarity. */
 const spinSpeed=rk=>{for(const[r,s]of CFG.SPIN_SPEED)if(rk>=r)return s;return 1};
 RAR.forEach(r=>r.w=Math.round(r.p*10));const TOT=RAR.reduce((a,r)=>a+r.w,0);
-const DUR=6500,TEASE=2400,TEASE_HOLD=.62,EA=.1,EC=.35,EL=1-EC,EV=1/(EA/2+(EC-EA)+EL/3);
+const DUR=5000,TEASE=2400,TEASE_HOLD=.62,EA=.1,EC=.35,EL=1-EC,EV=1/(EA/2+(EC-EA)+EL/3);
 function ease(p){if(p<=0)return 0;if(p>=1)return 1;if(p<EA)return .5*EV*p*p/EA;const d1=.5*EV*EA;if(p<EC)return d1+EV*(p-EA);const q=(p-EC)/EL;return d1+EV*(EC-EA)+EV*EL/3*(1-Math.pow(1-q,3))}
 const easeIO=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
 if(TOT!==1000||RAR.reduce((a,r)=>a+r.d,0)!==100)console.error('Case odds must total 100');
@@ -38,7 +39,7 @@ if(rnd()<XUP_P)return{fake:true,tip:false,look:'X'};
 if(!isReal(o))return{fake:false,tip:false};
 if(dev&&dev.fake)return{fake:true,tip:false};if(dev&&dev.tip)return{fake:false,tip:true};
 if(rnd()<FAKE_P)return{fake:true,tip:false};return{fake:false,tip:rnd()<TIP_P}}
-const api={title:'CASES',RAR,XDOWN_P,XUP_P,spinSpeed,teaseIdx,pos,present,WIN,STEP,FAKE_P,TIP_P,TEASE_P,mount(el){
+const api={title:'CASES',RAR,XDOWN_P,XUP_P,spinSpeed,teaseIdx,pos,present,WIN,STEP,FAKE_P,TIP_P,TEASE_P,DUR,mount(el){
 if(!document.getElementById('stk-cs')){const s=document.createElement('style');s.id='stk-cs';s.textContent=`
 .cs-odds{font-size:20px;line-height:1.5;text-align:center}.cs-odds h3{margin:6px 0;font-weight:400;font-size:26px;color:#a3a3a3}
 .cs-past{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px;min-height:30px;justify-content:flex-start}.cs-past b{font-size:13px;padding:4px 14px;border-radius:999px;background:var(--c);color:#fff;border:2px solid var(--b)}
