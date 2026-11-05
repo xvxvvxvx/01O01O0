@@ -1,15 +1,15 @@
 Games.cases=(()=>{
-// v2.5 economy: multiplier ranges (Common .2-.8x, Uncommon 1-1.25x, Rare 1.3-2x, Legendary 2.4-3.4x, Mythic 3.8-5.4x, Secret 6-11x) give a ~95% return with 50% of rounds in profit (original game: ~187%).
-// v2.5: new 0x "X" outcome. Real odds (p): X 31.5 / Common 20 / Uncommon 27 / Rare 13 / Legendary 5.2 / Mythic 2.6 / Secret 0.7 (~99% return, 48.5% of rounds in profit; multipliers buffed slightly in v2.5b: Common .25-.85x, Uncommon 1-1.3x, Rare 1.35-2.1x, Legendary 2.5-3.6x, Mythic 4-5.7x, Secret 6.5-12x). The "Case Odds" list shows d: X 26 / Common 25 / Uncommon 27 / Rare 13 / Legendary 5 / Mythic 3 / Secret 1.
+// v2.6b economy: Secret pays 6-30x and the other tiers were raised for a higher payout: Common .3-.85x, Uncommon 1-1.25x, Rare 1.35-1.8x, Legendary 2.4-3.3x, Mythic 3.6-4.9x. Return ~100.8% (was 99.2%) with the odds unchanged and 48.5% of rounds in profit; the edge is thin, so money still comes from long grinding (rank money counts only positive round profits).
+// v2.5: new 0x "X" outcome. Real odds (p): X 31.5 / Common 20 / Uncommon 27 / Rare 13 / Legendary 5.2 / Mythic 2.6 / Secret 0.7. The "Case Odds" list shows d: X 26 / Common 25 / Uncommon 27 / Rare 13 / Legendary 5 / Mythic 3 / Secret 1.
 // ---- Odds config: p = percent actually rolled (one decimal place max, must total 100); d = percent shown in the "Case Odds" list (display text only); fx = VFX colour ----
 const RAR = [
   { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 31.5,d: 26, zero: 1 },
-  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .25, max: .85, p: 20,  d: 25 },
-  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.3, p: 27,  d: 27 },
-  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.35,max: 2.1, p: 13,  d: 13 },
-  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 2.5, max: 3.6, p: 5.2, d: 5,  fx: '#fbbf24' },
-  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 4,   max: 5.7, p: 2.6, d: 3,  fx: '#ef4444' },
-  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 6.5, max: 12, p: .7, d: 1, fx: '#e5e7eb' }
+  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .3,  max: .85, p: 20,  d: 25 },
+  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.25,p: 27,  d: 27 },
+  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.35,max: 1.8, p: 13,  d: 13 },
+  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 2.4, max: 3.3, p: 5.2, d: 5,  fx: '#fbbf24' },
+  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 3.6, max: 4.9, p: 2.6, d: 3,  fx: '#ef4444' },
+  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 6, max: 30, p: .7, d: 1, fx: '#e5e7eb' }
 ];const LIFE=['Legendary','Mythic','Secret'],LOCK_BEAT=3000;
 /* Presentation-only events. They are decided AFTER the real result is rolled and never change it, the payout, or the odds:
    TEASE_P (v2.3: 60%, was 80%) = chance a Legendary+ neighbour of a Common/Uncommon result triggers the near-miss rollback.
@@ -46,6 +46,7 @@ if(!document.getElementById('stk-cs')){const s=document.createElement('style');s
 .ct{flex:0 0 ${TW}px;height:150px;border-radius:12px;border:3px solid var(--b);background:linear-gradient(#1f1f1f,#111111);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 6px 8px;color:var(--b);cursor:pointer;opacity:.55;filter:saturate(.35) brightness(.75);box-shadow:0 8px 14px #000a;transition:opacity .2s,filter .2s,transform .2s,box-shadow .2s}.ct.sel{opacity:1;filter:none;transform:scale(1.05);box-shadow:0 0 26px var(--b)}.ct:focus-visible{outline:3px solid #fff}
 .ct i{font-style:normal;line-height:1;display:flex;align-items:center;justify-content:center;width:72px;height:72px;filter:drop-shadow(0 0 8px var(--b))}
 .ct i img{width:100%;height:100%;object-fit:contain;pointer-events:none}.ct.win{outline:3px solid #fff;box-shadow:0 0 32px var(--b);transform:scale(1.07);opacity:1;filter:none}
+.ct i.noimg{border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffffaa,var(--b) 62%)}   /* v2.6: art file unavailable (offline and never cached): a rarity-coloured orb instead of a broken image */
 .cs-sel{position:absolute;left:50%;top:4px;width:${TW+10}px;height:160px;transform:translateX(-50%);border:3px solid #fff;border-radius:14px;box-shadow:0 0 18px #fff6;pointer-events:none;transition:border-color .3s,box-shadow .3s}
 .cs-ptr{position:absolute;left:50%;top:166px;width:3px;height:34px;margin-left:-1px;background:#fff;pointer-events:none}.cs-ptr::after{content:"";position:absolute;left:-8px;bottom:-14px;width:16px;height:16px;border:3px solid #fff;border-radius:50%;background:#050505}
 .cs-res{margin-top:14px;font-size:17px;min-height:50px}
@@ -82,7 +83,7 @@ const tile = (o, i) =>
   `<div class="ct${o.r.fx ? ' hi r-' + o.r.k : o.r.zero ? ' r-X' : ''}" data-i="${i}" tabindex="0"
        role="button" aria-label="${o.r.k} ${lbl(o)}"
        style="--c:${o.r.c};--b:${o.r.b || o.r.c};--fx:${o.r.fx || o.r.c}">
-     <i>${o.r.zero ? XSVG : `<img src="${o.r.ic}" alt="">`}</i>
+     <i>${o.r.zero ? XSVG : `<img src="${o.r.ic}" alt="" onerror="this.parentNode.classList.add('noimg');this.remove()">`}</i>
      <b>${lbl(o)}</b>
    </div>`;const pill=o=>`<b style="--c:${o.r.c};--b:${o.r.b||o.r.c}">${lbl(o)}</b>`;
 function center(i){return wr.clientWidth/2-(i*STEP+TW/2)}
