@@ -1,8 +1,10 @@
 /* Shared UI: rank badges, gem icon, account bar + sidebar (Shell), modals, daily wheel, homepage dashboard, Rank-Up and Daily Spin pages. */
 let _bid=0;const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const gemIcon=(sz=18)=>`<svg class="gic" viewBox="0 0 24 24" width="${sz}" height="${sz}" aria-hidden="true"><polygon points="12,2 21,9 12,22 3,9" fill="#d58cff" stroke="#8b3dd6" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 9h18M8 9l4-7 4 7-4 13z" fill="none" stroke="#f3d6ff" stroke-width="1" opacity=".8"/></svg>`;
-/* rank icon id (CFG.RANKS[i].ic) -> image file in img/. v2.45 art (jpg) ships as white placeholders: replace the files, keep the names. */
-const BIMG={demon:'insanedemon.png',xdemon:'extremedemon.png',impdemon:'impossibledemon.jpg',unreal:'unreal.jpg',div5:'div5.jpg',div4:'div4.jpg',div3:'div3.jpg',div2:'div2.jpg',div1:'div1.jpg'};
+/* rank icon id (CFG.RANKS[i].ic) -> image file in img/. Art (jpg) ships as white placeholders: replace the files, keep the names.
+   v2.6: champion.jpg (Champion I-III) and radiant.jpg (Radiant I-III). If a file is missing the badge shows a blank white box (BPH) instead of a broken image. */
+const BIMG={demon:'insanedemon.png',xdemon:'extremedemon.png',impdemon:'impossibledemon.jpg',unreal:'unreal.jpg',div5:'div5.jpg',div4:'div4.jpg',div3:'div3.jpg',div2:'div2.jpg',div1:'div1.jpg',champion:'champion.jpg',radiant:'radiant.jpg'};
+const BPH='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2010%2010%22%3E%3Crect%20width%3D%2210%22%20height%3D%2210%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E';
 const Badge={
 grad:i=>`linear-gradient(135deg,${CFG.RANKS[i].g[0]},${CFG.RANKS[i].g[1]})`,
 txt:(i,st='')=>`<b class="rk" style="background-image:${Badge.grad(i)};${st}">${CFG.RANKS[i].n.toUpperCase()}</b>`,
@@ -10,9 +12,8 @@ svg(i,sz=56){const id='bd'+(++_bid),[a,b]=CFG.RANKS[i].g,P=p=>`<polygon points="
 const star=(n,ro,ri)=>{const o=[];for(let k=0;k<n*2;k++){const r=k%2?ri:ro,t=Math.PI*k/n-Math.PI/2;o.push((50+r*Math.cos(t)).toFixed(1)+','+(50+r*Math.sin(t)).toFixed(1))}return o.join(' ')};
 const S=[`<circle cx="50" cy="50" r="38" fill="none" stroke="url(#${id})" stroke-width="10"/>`,P('8,14 92,14 50,90'),P('50,5 90,27 90,73 50,95 10,73 10,27'),`<rect x="14" y="14" width="72" height="72" rx="12" fill="url(#${id})" stroke="${b}" stroke-width="3"/>`,P(star(4,46,14)),P('50,6 94,38 77,90 23,90 6,38'),P('30,6 70,6 94,30 94,70 70,94 30,94 6,70 6,30'),`<circle cx="50" cy="50" r="42" fill="url(#${id})" stroke="${b}" stroke-width="4"/>`,P('25,12 75,12 96,38 50,92 4,38'),P(star(12,48,36)),`<polyline points="14,54 40,80 88,22" fill="none" stroke="url(#${id})" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>`];
 const ic=CFG.RANKS[i].ic;
-if(BIMG[ic])return `<img class="bdg" src="img/${BIMG[ic]}" width="${sz}" height="${sz}" alt="" aria-hidden="true">`;
-const X={crown:P('8,78 14,28 34,50 50,18 66,50 86,28 92,78'),feather:`<path d="M80,8C42,10 18,38 20,78L12,94 28,86C62,84 86,52 80,8Z" fill="url(#${id})" stroke="${b}" stroke-width="3" stroke-linejoin="round"/><path d="M80,8 22,84" stroke="${b}" stroke-width="3" fill="none"/>`};
-return `<svg class="bdg" viewBox="0 0 100 100" width="${sz}" height="${sz}" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>${ic==='check'?S[10]:X[ic]||S[i]}</svg>`}};
+if(BIMG[ic])return `<img class="bdg" src="img/${BIMG[ic]}" onerror="this.onerror=null;this.src='${BPH}'" width="${sz}" height="${sz}" alt="" aria-hidden="true">`;
+return `<svg class="bdg" viewBox="0 0 100 100" width="${sz}" height="${sz}" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>${ic==='check'?S[10]:S[i]}</svg>`}};
 const hms=ms=>{const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return [h,m,s%60].map(x=>String(x).padStart(2,'0')).join(':')};
 const dhms=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(s/86400)}d, ${Math.floor(s%86400/3600)}h, ${Math.floor(s%3600/60)}m, ${s%60}s`};   // weekly quest reset format
 const hmsr=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(s/3600)}h, ${Math.floor(s%3600/60)}m, ${s%60}s`};   // daily quest reset format (weekly adds days)

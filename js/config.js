@@ -2,7 +2,7 @@
    NOTE: rank multipliers were removed. Ranks give starting Steakcoin + Gems on rank-up instead. */
 const CFG={
 UNRANKED_START:10,                          // configurable default test balance for Unranked players
-GEM:{TO_COIN:50,REF_USD:500},               // 1 Gem converts to 50 Steakcoin. REF_USD (1 Gem = $500) is a SEPARATE reference value for rank valuation only.
+GEM:{TO_COIN:100,REF_USD:500},              // v2.6: 1 Gem converts to 100 Steakcoin (was 50). REF_USD (1 Gem = $500) is a SEPARATE reference value for rank valuation only.
 // v2.5 economy: req.c re-curved (was 2,500 .. 7,000,000; now 250 .. 1,100,000). Games return ~98% now, so progress comes from grinding (rank money = positive round profits), not compounding; round counts (r) are unchanged.
 // v2.5b: rank rounds cut ~20% and rank money ~10% (about 20% less time per rank-up; the money gate is trimmed less so it is not the bottleneck).
 // RANKS[i].req = requirement to go from rank i to i+1;  RANKS[i].rw = starting Steakcoin (c) + Gems (g) granted on reaching rank i.
@@ -18,15 +18,16 @@ RANKS:[
 {n:'Diamond', g:['#93c5fd','#1e3a8a'],req:{c:45000,r:600},rw:{c:500,g:8}},
 {n:'Ascended',g:['#ffffff','#7dd3fc'],req:{c:63000,r:800},rw:{c:500,g:10}},
 {n:'Verifier I',  g:['#fde68a','#d97706'],req:{c:72000,r:800}, rw:{c:750,g:12}},
-// v2.25 Rank Expansion I. ic = badge icon: check | crown | feather | demon | xdemon (demon icons are img/insanedemon.png / img/extremedemon.png)
+// v2.25 Rank Expansion I. ic = badge icon: check | champion | radiant | demon | xdemon (image icons live in img/, see BIMG in js/ui.js)
+// v2.6: Champion I-III use img/champion.jpg and Radiant I-III use img/radiant.jpg. Until you drop those files in, a blank white box is shown.
 {n:'Verifier II', g:['#fde68a','#d97706'],req:{c:81000,r:800}, rw:{c:750,g:12},ic:'check'},
 {n:'Verifier III',g:['#fde68a','#d97706'],req:{c:90000,r:800}, rw:{c:750,g:12},ic:'check'},
-{n:'Champion I',  g:['#9f1d2e','#f5b08a'],req:{c:115000,r:1000}, rw:{c:1250,g:14},ic:'crown'},
-{n:'Champion II', g:['#9f1d2e','#f5b08a'],req:{c:130000,r:1000}, rw:{c:1250,g:14},ic:'crown'},
-{n:'Champion III',g:['#9f1d2e','#f5b08a'],req:{c:155000,r:1200}, rw:{c:1250,g:14},ic:'crown'},
-{n:'Radiant I',   g:['#ffd84d','#d9c9a3'],req:{c:170000,r:1200}, rw:{c:1500,g:16},ic:'feather'},
-{n:'Radiant II',  g:['#ffd84d','#d9c9a3'],req:{c:190000,r:1200}, rw:{c:1500,g:16},ic:'feather'},
-{n:'Radiant III', g:['#ffd84d','#d9c9a3'],req:{c:215000,r:1400}, rw:{c:1500,g:16},ic:'feather'},
+{n:'Champion I',  g:['#9f1d2e','#f5b08a'],req:{c:115000,r:1000}, rw:{c:1250,g:14},ic:'champion'},
+{n:'Champion II', g:['#9f1d2e','#f5b08a'],req:{c:130000,r:1000}, rw:{c:1250,g:14},ic:'champion'},
+{n:'Champion III',g:['#9f1d2e','#f5b08a'],req:{c:155000,r:1200}, rw:{c:1250,g:14},ic:'champion'},
+{n:'Radiant I',   g:['#ffd84d','#d9c9a3'],req:{c:170000,r:1200}, rw:{c:1500,g:16},ic:'radiant'},
+{n:'Radiant II',  g:['#ffd84d','#d9c9a3'],req:{c:190000,r:1200}, rw:{c:1500,g:16},ic:'radiant'},
+{n:'Radiant III', g:['#ffd84d','#d9c9a3'],req:{c:215000,r:1400}, rw:{c:1500,g:16},ic:'radiant'},
 {n:'Insane Demon I', g:['#ff7a45','#c2221a'],req:{c:250000,r:1600}, rw:{c:1750,g:18},ic:'demon'},
 {n:'Insane Demon II',g:['#ff7a45','#c2221a'],req:{c:270000,r:1600}, rw:{c:1750,g:18},ic:'demon'},
 // v2.45 Rank Expansion 2. Icons: img/<file> (white placeholders until real art is dropped in with the same filename).
@@ -48,8 +49,8 @@ RANKS:[
 // Animation only: never payouts or odds. Cases: Silver=3, Amethyst=7, Impossible Demon I=24. Aviamasters: Silver=3, Amethyst=7, Division 5=30, Division 1=34.
 SPIN_SPEED:[[24,2.5],[7,2],[3,1.5]],
 AVI_SPEED:[[34,2.75],[30,2.5],[7,2],[3,1.5]],
-CONV:{PLINKO:1000,CASES:3,FLIP:5,'DOUBLE OR NOTHING':5},   // raw rounds per 1 qualified mini-game round (others 1)
-GAP_MS:{PLINKO:400},                        // minimum delay between wagers (enforced in Econ.cool, shared across tabs)
+CONV:{PLINKO:2000,CASES:3,FLIP:5,'DOUBLE OR NOTHING':5},   // raw rounds per 1 qualified mini-game round (others 1). v2.6: Plinko 1000 -> 2000
+GAP_MS:{},                                  // minimum delay between wagers per game (enforced in Econ.cool, shared across tabs). v2.6: Plinko's 400 ms drop cooldown was removed
 LOCK_TTL_MS:15000,                          // a cross-tab bet lock with no heartbeat for this long is stale and can be taken over
 MIN_BET:{PLINKO:1},DEFAULT_MIN:0.01,
 // Rarity: gems = normal price, deal = special-deal price, w = shop appearance weight (configurable; favours Common/Rare).
