@@ -61,10 +61,10 @@ Object.assign(H,{g:{},lock:0});Guard.mark(true,false,90000);Guard.take('D',90000
 {let pf=0;for(let i=0;i<N;i++){const p=P();if(!p.crash&&!p.fall&&p.m>1)pf++}t(`v2.5 Aviamasters economy: RTP ~99% (${(rtp*100).toFixed(1)}%), lands ${(w/N*100).toFixed(0)}%, profit ${(pf/N*100).toFixed(0)}%`,Math.abs(rtp-.99)<.04&&pf/N>.41&&pf/N<.48&&w/N>.88&&Games.aviamasters.PR===.3)}}
 // ---- v2.5 Cases X outcome
 {const RA=C.RAR,sp=RA.reduce((a,r)=>a+r.p,0),sd=RA.reduce((a,r)=>a+r.d,0),g=k=>RA.find(r=>r.k===k);
-t('v2.5 Cases rolled odds: X31.5/C20/U27/R13/L5.2/M2.6/S0.7',RA.map(r=>r.k+r.p).join()==='X31.5,Common20,Uncommon27,Rare13,Legendary5.2,Mythic2.6,Secret0.7'&&Math.abs(sp-100)<1e-9);
-t('v2.5 Cases DISPLAYED odds: X26/C25/U27/R13/L5/M3/S1 (total 100)',RA.map(r=>r.k+r.d).join()==='X26,Common25,Uncommon27,Rare13,Legendary5,Mythic3,Secret1'&&sd===100);
+t('v2.7 Cases rolled odds: X31.3/C20/U27/R13/L5.2/M2.6/S0.7/P0.2',RA.map(r=>r.k+r.p).join()==='X31.3,Common20,Uncommon27,Rare13,Legendary5.2,Mythic2.6,Secret0.7,Pirate0.2'&&Math.abs(sp-100)<1e-9);
+t('v2.5 Cases DISPLAYED odds: X26/C25/U27/R13/L5/M3/S1 (total 100)',RA.map(r=>r.k+r.d).join()==='X26,Common25,Uncommon27,Rare13,Legendary5,Mythic3,Secret0.8,Pirate0.2'&&Math.abs(sd-100)<1e-9);
 t('X is a red 0x outcome',g('X').zero===1&&g('X').min===0&&g('X').max===0&&g('X').c==='#ef4444');
-{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.5 Cases economy: RTP ~99% ('+(rtp*100).toFixed(0)+'%), 48.5% of rounds in profit',Math.abs(rtp-.99)<.02&&Math.abs(pr-48.5)<1e-9)}
+{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.5 Cases economy: RTP ~99% ('+(rtp*100).toFixed(0)+'%), 48.5% of rounds in profit',Math.abs(rtp-1.258)<.005&&Math.abs(pr-48.7)<1e-9)}
 t('X flips are rare (<=6%)',C.XDOWN_P<=.06&&C.XUP_P<=.06);
 const XP=k=>{let f=0,n=100000;for(let i=0;i<n;i++){const p=C.present(mk(k),Math.random);if(p.fake)f++}return f/n};
 t('X is shown as Common/Uncommon/Rare then flips (~'+C.XDOWN_P*100+'%)',Math.abs(XP('X')-C.XDOWN_P)<.006);
