@@ -1,4 +1,5 @@
-/* v2.5 economy: rank curve, return-to-player of Cases / Aviamasters. node tests/update25.test.js */
+/* v2.5 economy: rank curve, return-to-player of Cases / Aviamasters. node tests/update25.test.js
+   v2.7: Cases return is now ~112.2% (Pirate Token 0.05%, rare tiers slightly more common). */
 const fs=require('fs'),vm=require('vm'),path=require('path');let pass=0,fail=0;const t=(n,ok)=>{console.log((ok?'PASS ':'FAIL ')+n);ok?pass++:fail++};
 const sb={console,Math,Date,localStorage:{getItem(){return null},setItem(){},removeItem(){}}};vm.createContext(sb);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/config.js'),'utf8')+';this.CFG=CFG',sb);const R=sb.CFG.RANKS;
@@ -13,5 +14,5 @@ t('every rank money gate is reachable by grinding (<= 4x the round gate at 20% b
 const src=fs.readFileSync(path.join(__dirname,'../js/games/cases.js'),'utf8');
 const rows=[...src.matchAll(/min: ([\d.]+),\s*max: ([\d.]+),\s*p: ([\d.]+)/g)].map(m=>[+m[1],+m[2],+m[3]]);
 const rtp=rows.reduce((a,[lo,hi,p])=>a+p/100*(lo+hi)/2,0);
-t('Cases return is about 125.8% incl. the Pirate Token ('+(rtp*100).toFixed(1)+'%)',Math.abs(rtp-1.258)<.005);
+t('Cases return is about 112.2% incl. the 0.05% Pirate Token ('+(rtp*100).toFixed(1)+'%)',Math.abs(rtp-1.12185)<.005);
 console.log(pass+' passed, '+fail+' failed');process.exit(fail?1:0);
