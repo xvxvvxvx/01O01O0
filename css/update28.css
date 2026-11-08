@@ -1,0 +1,38 @@
+/* v2.8: Fredoka everywhere, 100%-zoom layout pass, Gem-Shop header fix, redesigned Limited rarity. Loaded last, so it wins over style.css / update25.css. */
+:root{--serif:'Fredoka','Trebuchet MS',system-ui,sans-serif;--sans:'Fredoka','Trebuchet MS',system-ui,sans-serif}
+html,body,body *,body *::before,body *::after,button,input,select,textarea{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif!important}
+/* ---------- layout: use space better at 100% zoom ---------- */
+nav{min-height:56px;padding:4px 16px 4px 12px;gap:10px}.logo{font-size:32px}.brand small{font-size:9px}
+main{padding:10px 24px 24px}.sec{font-size:19px;margin:2px 0 10px}.gt{font-size:26px;margin:0 0 6px}
+.cards{gap:12px}.card .nm{font-size:18px}.card .big{font-size:64px}
+.frame{height:calc(100vh - 136px);min-height:440px;padding:10px;border-width:2px;border-radius:20px}
+.play{gap:10px;grid-template-columns:250px minmax(0,1fr)}
+.side{padding:10px 12px;gap:7px}.side input,.side select{padding:7px 9px;font-size:14px}.side .btn{padding:9px 14px;font-size:14px}
+.side .hist,.side p{font-size:12px!important;line-height:1.35;margin-top:2px}
+.stage{padding:8px}.mult{font-size:34px;margin:4px 0}.hist{font-size:12px}
+.welcome{padding-top:20px;gap:12px}.welcome h1{font-size:34px}
+.dash{margin-top:14px;gap:12px}.dash2{margin-top:12px;gap:12px}.dp.bigp,.dp.reqs,.dp.allr,.dp.dpg,.dp.shopp,.dp.invp,.dp.qp2{padding:12px 16px}
+.big2{font-size:24px}.stats{font-size:13px;padding:8px 12px}.rubtn.big{font-size:30px;padding:10px}.warn{font-size:13px}.rq{font-size:13px}
+.cs-odds{font-size:14px;line-height:1.3}.cs-odds h3{font-size:18px;margin:2px 0}.cs-res{margin-top:8px;font-size:15px;min-height:36px}.cs-hint{font-size:11px}
+.crt{min-height:240px;gap:8px}.crh{font-size:clamp(20px,2.4vw,28px)}.crl{font-size:clamp(14px,1.5vw,18px)}.crroll{font-size:clamp(18px,2vw,24px);padding:6px 10px}
+.shbot{margin-top:10px;gap:12px}.conv,.rot{font-size:15px}.cvt{font-size:18px}
+.qn{min-height:110px;font-size:16px}.igrid{gap:8px}.msg{gap:8px}
+@media(max-width:800px){.frame{height:auto;min-height:0}.play{grid-template-columns:1fr}}
+/* header: never let the balance pills collide with anything */
+@media(max-width:1500px){.acct{flex-wrap:wrap;justify-content:center;row-gap:4px}.acct .hsp{display:none}.acct .hr{flex:none}}
+.acct .pl,.acct .ac small{white-space:nowrap}
+/* Gem-Shop / Inventory / Quests / Mastery: the gem chip sits inline beside the page title instead of floating over the content */
+main>.sec{display:inline-block;vertical-align:middle}
+.gemchip{position:static;display:inline-flex;vertical-align:middle;margin:0 0 10px 14px;font-size:16px;padding:3px 12px}
+/* modal guides: close button always pinned top-right and visible */
+.mb.wide{position:relative}.mb.wide .chead{position:sticky;top:0;z-index:2;background:#000;padding-bottom:4px}.mb.wide .chead .xbtn{margin-left:auto;flex:none}
+/* Aviamasters side panel: live data first, description last */
+.avi-side>*{order:1}.avi-side #go{order:2}.avi-side #tb{order:3}.avi-side #lw{order:4}.avi-side .avi-rf{order:5}.avi-side #ah{order:6}.avi-side #as{order:7}.avi-side .avi-desc{order:9;opacity:.8}
+.avi-side #lw,.avi-side #as{color:#fff;font-weight:600;font-size:13px!important}
+/* ---------- Limited rarity: animated black, white outline (clearly not Legendary gold) ---------- */
+.rar[style*="#f5f5f5"]{display:inline-block;padding:1px 10px;border:2px solid #fff;border-radius:999px;color:#fff!important;letter-spacing:1.5px;
+background:linear-gradient(110deg,#000 0%,#1d1d1d 30%,#000 48%,#3a3a3a 55%,#000 70%,#111 100%) 0 0/300% 100%;box-shadow:0 0 0 1px #000,0 0 8px #ffffff66;text-shadow:0 0 6px #fff9;animation:lmBlk 3.6s linear infinite,lmBlkGlow 2.4s ease-in-out infinite}
+.sprev:has(.lmx){animation:lmBlkGlow 2.8s ease-in-out infinite}
+@keyframes lmBlk{to{background-position:300% 0}}
+@keyframes lmBlkGlow{0%,100%{box-shadow:0 0 0 1px #000,0 0 4px #ffffff44}50%{box-shadow:0 0 0 1px #000,0 0 14px #fffc}}
+@media(prefers-reduced-motion:reduce){.rar[style*="#f5f5f5"],.sprev:has(.lmx){animation:none!important}}
