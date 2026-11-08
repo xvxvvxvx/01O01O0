@@ -57,10 +57,22 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 - **UI**: Home "Your balance" shows `$1,234,567,890.123` (display only). The Tag and Gradient chests have distinct spin/open animations.
 - Tests: `node tests/update275.test.js` (plus the updated `update27`, `update23`, `update25`, `update26`).
 
+## Update 2.8 (Fredoka, compact layout, Limited rarity, Coin / Gold wording)
+- **Gem-Shop**: the gem chip is now inline beside the page title instead of floating over the content, and the header balance pills wrap below 1500px wide so nothing overlaps. The crate chance guides and the tag/gradient preview keep their **X** pinned top-right (always visible, even when the list scrolls) and now also close when you click the dark backdrop (Esc still works).
+- **Calculator dialogue bug**: the bottom toast kept its "show" class after finishing, so hiding and re-showing the game view with Right Shift replayed the last message. The toast now clears itself when its animation ends or is cancelled, when the view is hidden, and on page hide. Toast behaviour everywhere else is unchanged.
+- **Layout at 100% zoom** (`css/update28.css`): smaller headings, padding and frame height, a more compact side panel, and a smaller Cases odds list, so more of each game fits in the first screen. Mobile layouts keep their single-column rules.
+  - **Aviamasters**: one-line description; Last win, Recent flights and Session now sit directly under the Launch / Turbo buttons, with the description last.
+  - **Plinko / Double or Nothing**: shorter side descriptions (odds and RTP statements unchanged).
+- **Branding / terminology**: `01O0`, `01O0coin` and `Steakcoin` no longer appear in visible text. The currency reads **Coin** and the site reads **Gold** (UI text, labels, toasts, tooltips, quest names, the disclaimer and the page title). This is applied by a display-only text layer in `js/update28.js`, so internal identifiers, the `0-100_*` save keys, existing balances and saved data are untouched. The static header label in `game.html` was edited directly. The strings still exist in the original source files; a find-and-replace there is the only remaining clean-up.
+- **Limited rarity redesign**: the Limited label is now an animated black pill with a white outline and a soft white glow (moving sheen), clearly different from Legendary gold; Limited item previews pulse a white glow. Applies everywhere the rarity label is drawn (inventory, Mastery rewards, Pirate rewards). Respects reduced-motion.
+- **Typography**: all Times New Roman / serif styling (the old Playfair Display headings) is replaced by **Fredoka** (Google Fonts, weights 300-700, `display=swap`, fallbacks Trebuchet MS / system-ui / sans-serif) and forced over every element, including canvas text (Aviamasters, Crash, Plinko). Fredoka tops out at weight 700, so 800/900 weights render as 700. The Google Fonts files are cached by the service worker. The calculator page (`index.html`) is unchanged and keeps its system font.
+- **Files**: new `css/update28.css`, `js/update28.js`, `tests/update28.test.js`; modified `game.html`, `js/loader.js` (loads `update28` last), `sw.js` (cache `gold-offline-v2.8.0`, new files pre-cached), `README.md`.
+- Tests: `node tests/update28.test.js`.
+
 ## Latest changes
 - **Right Shift** (tap it on its own) toggles between the calculator and the game instead of Backspace. Backspace is now always the calculator's delete key. The tip in the game header says so.
 - **Calculator page**: light/dark mode switch (remembered in `localStorage`), a right-hand side bar with an interactive periodic table (`js/ptable.js`). Clicking the Gold (Au) element opens the game, the same way `0 - 100 =` does.
 - **Removed** the cloud profile / cosmetics cloud-sync integration (its script, demo page and settings panel). Saves are local only.
 
 ## Tests
-`node tests/update245.test.js`, `node tests/update23.test.js`, `node tests/update25.test.js`, `node tests/update26.test.js`, `node tests/update27.test.js`, `node tests/economy.test.js`, `node tests/security.test.js`
+`node tests/update245.test.js`, `node tests/update23.test.js`, `node tests/update25.test.js`, `node tests/update26.test.js`, `node tests/update27.test.js`, `node tests/update275.test.js`, `node tests/update28.test.js`, `node tests/economy.test.js`, `node tests/security.test.js`
