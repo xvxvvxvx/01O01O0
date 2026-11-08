@@ -1,4 +1,6 @@
 Games.cases=(()=>{
+// v2.75 ECONOMY: extra rows are now PERMANENT (max 2), so the real odds are split in two tables. p = main row, px = every extra row (X-heavier, rarer big tiers); d = DISPLAYED odds (unchanged, text only).
+// Multipliers trimmed ~5% (Common .3-.8, Uncommon 1-1.2, Rare 1.3-1.7, Legendary 2.3-3.1, Mythic 3.4-4.6, Secret 6-27, Pirate 95-140). Return: main row ~101.3%, each extra row ~34.3% => 0/1/2 extra rows ~101% / ~136% / ~170% per wager (was 112% / 224% / 337%).
 // v2.7: Pirate Token 0.05% (was 0.2%), rare tiers a little more common (Legendary 5.2->5.6, Mythic 2.6->2.9, Secret 0.7->0.85, taken from X 31.3->30.6). Weights now have 2 decimals (TOT 10000).
 // v2.7 Pirate Token perks: extra rows (up to 3, one wager), roll-speed upgrades (total capped at 5x). All rows spin at once; their multipliers are ADDED; the whole wager is ONE settled round.
 // Each row is rolled independently (same odds) and every row counts for Cases-opened / Legendary / Mythic / Secret / Pirate counters. Each Pirate Token row grants one Pirate reward (js/pirate.js).
@@ -7,30 +9,32 @@ Games.cases=(()=>{
 // Presentation-only events (fake common, tip-over, tease, X flips) are decided AFTER the real result is rolled and never change it.
 // ---- Odds config: p = percent actually rolled (two decimals max, must total 100); d = percent shown in the "Case Odds" list (display text only); fx = VFX colour; n = display name; gold = Pirate Token presentation ----
 const RAR = [
-  { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 30.6, d: 26, zero: 1 },
-  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .3,  max: .85, p: 20,  d: 25 },
-  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.25,p: 27,  d: 27 },
-  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.35,max: 1.8, p: 13,  d: 13 },
-  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 2.4, max: 3.3, p: 5.6, d: 5.4,  fx: '#fbbf24' },
-  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 3.6, max: 4.9, p: 2.9, d: 2.9, fx: '#ef4444' },
-  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 6, max: 30, p: .85, d: .65, fx: '#e5e7eb' },
-  { k: 'Pirate',    n: 'Pirate Token', c: '#ffd84d', b: '#d4a017', ic: 'img/case-pirate.jpg', min: 100, max: 150, p: .05, d: .05, fx: '#ffd84d', gold: 1 }
+  { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 32.21, px: 70.74, d: 26, zero: 1 },
+  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .3,  max: .8, p: 19, px: 13, d: 25 },
+  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.2,p: 27, px: 10, d: 27 },
+  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.3,max: 1.7, p: 13.2, px: 4, d: 13 },
+  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 2.3, max: 3.1, p: 5.3, px: 1.5, d: 5.4,  fx: '#fbbf24' },
+  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 3.4, max: 4.6, p: 2.5, px: .6, d: 2.9, fx: '#ef4444' },
+  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 6, max: 27, p: .75, px: .15, d: .65, fx: '#e5e7eb' },
+  { k: 'Pirate',    n: 'Pirate Token', c: '#ffd84d', b: '#d4a017', ic: 'img/case-pirate.jpg', min: 95, max: 140, p: .04, px: .01, d: .05, fx: '#ffd84d', gold: 1 }
 ];
 const LIFE=['Legendary','Mythic','Secret','Pirate'],LOCK_BEAT=3000;
-const TEASE_P=.6,FAKE_P=.12,TIP_P=.15,MIN_REAL=3,FLIP_MS=900,XDOWN_P=.06,XUP_P=.04,MAX_ROWS=3,SPEED_CAP=5;
+const TEASE_P=.6,FAKE_P=.12,TIP_P=.15,MIN_REAL=3,FLIP_MS=900,XDOWN_P=.06,XUP_P=.04,MAX_ROWS=2,SPEED_CAP=5;   // v2.75: max 2 PERMANENT extra rows (Perks.MAXR)
 const spinSpeed=rk=>{for(const[r,s]of CFG.SPIN_SPEED)if(rk>=r)return s;return 1};
 /* effective roll speed = rank speed + Pirate upgrade, never above SPEED_CAP (animation only) */
 const perkSpeed=rk=>{let b=0;try{if(typeof Perks!=='undefined')b=Perks.caseBonus()}catch(e){}return Math.min(SPEED_CAP,spinSpeed(rk)+b)};
 const isDev=()=>typeof DEVENV==='function'&&DEVENV();
-RAR.forEach(r=>r.w=Math.round(r.p*100));const TOT=RAR.reduce((a,r)=>a+r.w,0);
+RAR.forEach(r=>{r.w=Math.round(r.p*100);r.wx=Math.round(r.px*100)});const TOT=RAR.reduce((a,r)=>a+r.w,0),TOTX=RAR.reduce((a,r)=>a+r.wx,0);
+/* expected return of ONE row (x = extra-row table) and of a whole wager with n extra rows (rows' multipliers are added) */
+const evRow=x=>RAR.reduce((a,r)=>a+(x?r.px:r.p)/100*(r.min+r.max)/2,0),evWager=n=>evRow(false)+n*evRow(true);
 const nm=o=>o.r.n||o.r.k;
 const DUR=6500,TEASE=2400,TEASE_HOLD=.62,EA=.1,EC=.35,EL=1-EC,EV=1/(EA/2+(EC-EA)+EL/3);
 function ease(p){if(p<=0)return 0;if(p>=1)return 1;if(p<EA)return .5*EV*p*p/EA;const d1=.5*EV*EA;if(p<EC)return d1+EV*(p-EA);const q=(p-EC)/EL;return d1+EV*(EC-EA)+EV*EL/3*(1-Math.pow(1-q,3))}
 const easeIO=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
-if(TOT!==10000||Math.abs(RAR.reduce((a,r)=>a+r.d,0)-100)>1e-9)console.error('Case odds must total 100');
+if(TOT!==10000||TOTX!==10000||Math.abs(RAR.reduce((a,r)=>a+r.d,0)-100)>1e-9)console.error('Case odds must total 100');
 const TW=104,STEP=114,N=60,WIN=48,REST=4;
 const rndG=()=>{try{return crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}catch(e){return Math.random()}};
-function rollWith(rnd){let r=Math.floor(rnd()*TOT),i=0;for(;i<RAR.length-1;i++){if(r<RAR[i].w)break;r-=RAR[i].w}const z=RAR[i];return{r:z,m:Math.min(z.max,Math.max(z.min,Math.round((z.min+rnd()*(z.max-z.min))*100)/100))}}
+function rollWith(rnd,x){const K=x?'wx':'w';let r=Math.floor(rnd()*(x?TOTX:TOT)),i=0;for(;i<RAR.length-1;i++){if(r<RAR[i][K])break;r-=RAR[i][K]}const z=RAR[i];return{r:z,m:Math.min(z.max,Math.max(z.min,Math.round((z.min+rnd()*(z.max-z.min))*100)/100))}}
 /* The wager's multiplier is the SUM of its rows' multipliers. */
 const sumMult=os=>Math.round(os.reduce((a,o)=>a+o.m,0)*100)/100;
 /* Settles ONE wager (any number of rows) as ONE round: one App.settle, one lifetime-spin count. Drop counters / Mastery count every row. Each Pirate Token row grants a Pirate reward. */
@@ -84,7 +88,7 @@ c.globalAlpha=1;for(let i=S.length-1;i>=0;i--)if(S[i].l<=0)S.splice(i,1);
 raf=requestAnimationFrame(loop)}
 raf=requestAnimationFrame(loop);return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',size)}}
 
-const api={title:'CASES',RAR,TOT,XDOWN_P,XUP_P,MAX_ROWS,SPEED_CAP,spinSpeed,perkSpeed,teaseIdx,pos,present,roll:rollWith,sumMult,settleRows,CHEST,MEDAL,coinSprite,WIN,STEP,FAKE_P,TIP_P,TEASE_P,mount(el){
+const api={title:'CASES',RAR,TOT,TOTX,evRow,evWager,XDOWN_P,XUP_P,MAX_ROWS,SPEED_CAP,spinSpeed,perkSpeed,teaseIdx,pos,present,roll:rollWith,sumMult,settleRows,CHEST,MEDAL,coinSprite,WIN,STEP,FAKE_P,TIP_P,TEASE_P,mount(el){
 if(!document.getElementById('stk-cs')){const s=document.createElement('style');s.id='stk-cs';s.textContent=`
 .cs-odds{font-size:20px;line-height:1.5;text-align:center}.cs-odds h3{margin:6px 0;font-weight:400;font-size:26px;color:#a3a3a3}
 .cs-past{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px;min-height:30px;justify-content:flex-start}.cs-past b{font-size:13px;padding:4px 14px;border-radius:999px;background:var(--c);color:#fff;border:2px solid var(--b)}
@@ -160,7 +164,7 @@ const pkList=typeof Perks!=='undefined'?`<details class="cs-pk"><summary>Pirate 
 el.innerHTML=`<div class="play"><div class="side"><label>Wager</label>${App.betHTML()}<button class="btn" id="go">Place Wager</button><div class="cs-hint">Press Space to place a wager</div><div class="cs-bonus" id="bn"></div><div class="cs-odds"><h3>Case Odds:</h3>${RAR.map(r=>r.gold?`<div class="pg-tx">${r.n}: ${r.d}%</div>`:`<div style="color:${r.k==='Secret'?'#0a0a0a;text-shadow:0 0 6px #fff,0 0 2px #888':r.c}">${r.k}: ${r.d}%</div>`).join('')}</div>${pkList}</div><div class="stage cs-stage"><div class="cs-life" id="lf"></div><div style="text-align:left;color:#a3a3a3">Past Rolls:</div><div class="cs-past" id="pa"></div><div id="rw"><div class="cs-wrap"><div class="cs-strip"></div><div class="cs-sel"></div><div class="cs-ptr"></div></div></div><div class="cs-res" id="rs">Place a wager to open a case.</div></div></div>`;
 const q=s=>el.querySelector(s),go=q('#go'),rs=q('#rs'),br=q('.betrow'),bi=q('.bet'),rowsEl=q('#rw'),bn=q('#bn');
 let hb=0,busy=false,rd=null,past=[],tm=[],raf=0,pov=null,R=[];
-const rnd=rndG,roll=()=>rollWith(rnd);
+const rnd=rndG,roll=x=>rollWith(rnd,x);
 const rollReal=()=>{let o;do{o=roll()}while(!isReal(o));return o};   // dev forcing only
 const lookOf=k=>{const z=RAR.find(x=>x.k===k);return z.zero?{r:z,m:0}:{r:z,m:Math.round((z.min+rnd()*(z.max-z.min))*100)/100}},commonLook=()=>lookOf('Common');
 const XSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5l15 15M19.5 4.5l-15 15" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" fill="none"/></svg>',lbl=o=>o.r.zero?'X':o.m.toFixed(2)+'x';
@@ -172,7 +176,7 @@ const tile = (o, i) =>
      <b>${lbl(o)}</b>
    </div>`;const pill=o=>`<b${o.r.gold?' class="pg"':''} style="--c:${o.r.c};--b:${o.r.b||o.r.c}">${lbl(o)}</b>`;
 const center=(r,i)=>r.w.clientWidth/2-(i*STEP+TW/2);
-/* ---- rows: every row has its own wrapper / strip / selection; row 0 is the original line, rows 1-3 are the Pirate extras shown underneath ---- */
+/* ---- rows: every row has its own wrapper / strip / selection; row 0 is the original line, rows 1-2 are the permanent Pirate extras shown underneath ---- */
 function mkRow(w){const r={w,sr:w.querySelector('.cs-strip'),arr:[],sel:REST,prev:null,mo:null,o:null,done:false,landing:false};
 r.sr.onclick=e=>{const t=e.target.closest('.ct');if(t)choose(r,+t.dataset.i)};
 r.sr.onkeydown=e=>{const t=e.target.closest('.ct');if(!t)return;const i=+t.dataset.i;if(e.key==='Enter'){e.preventDefault();choose(r,i)}else if(e.key===' '&&!e.repeat){e.preventDefault();spin()}else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const j=i+(e.key==='ArrowRight'?1:-1);if(r.sr.children[j]){choose(r,j);r.sr.children[j].focus({preventScroll:true})}}};return r}
@@ -196,9 +200,9 @@ const tl=R.length===1?lbl(os[0]):x.M.toFixed(2)+'x';App.toast(pr>=0?`${tl}: +$${
 unlock();
 if(x.perks&&x.perks.length)tm.push(setTimeout(()=>pirate(os.find(o=>o.r.gold),pay),900));   // the round is already settled and the Pirate reward already applied; the cinematic keeps the wager button locked until it is closed
 else release()}
-function release(){busy=false;go.disabled=false;goTxt();br.classList.remove('dis');bi.disabled=false;bonus()}
+function release(){busy=false;try{setRows(typeof Perks!=='undefined'?Perks.rows():0)}catch(e){}go.disabled=false;goTxt();br.classList.remove('dis');bi.disabled=false;bonus()}
 function life(){q('#lf').innerHTML='<span>Lifetime spins:</span><span style="color:#e2e8f0">Total: <b>'+(Store.d.cs||0).toLocaleString('en-US')+'</b></span>'+LIFE.map(k=>{const r=RAR.find(x=>x.k===k);return `<span style="color:${r.fx}">${r.n||k}: <b>${Store.d.cc[k]||0}</b></span>`}).join('')}
-function bonus(){let h='';try{if(typeof Perks!=='undefined'){const s=Perks.get();if(s.r||s.c)h=`<b>Pirate perks</b><br>Extra rows ready: <b>${s.r}/${MAX_ROWS}</b> (next wager)<br>Roll speed upgrade: <b>+${s.c}x</b> (total ${+perkSpeed(Store.d.rk).toFixed(2)}x / ${SPEED_CAP}x)`}}catch(e){}bn.innerHTML=h}
+function bonus(){let h='';try{if(typeof Perks!=='undefined'){const s=Perks.get();if(s.r||s.c)h=`<b>Pirate perks</b><br>Permanent extra rows: <b>${s.r}/${MAX_ROWS}</b><br>Roll speed upgrade: <b>+${s.c}x</b> (total ${+perkSpeed(Store.d.rk).toFixed(2)}x / ${SPEED_CAP}x)`}}catch(e){}bn.innerHTML=h}
 function burst(r,o){if(!o.r.fx)return;const n={Legendary:18,Mythic:28,Secret:40,Pirate:60}[o.r.k],f=document.createElement('div');f.className='cs-burst';f.style.setProperty('--fx',o.r.fx);let h='<i class="cs-flash"></i><i class="cs-ring"></i>';
 for(let i=0;i<n;i++){const a=Math.random()*6.283,d=70+Math.random()*(o.r.k==='Legendary'?90:150);h+=`<b style="--dx:${Math.cos(a)*d*1.6}px;--dy:${Math.sin(a)*d*.8}px;animation-delay:${Math.random()*.12}s"></b>`}
 f.innerHTML=h;r.w.appendChild(f);r.w.style.setProperty('--fx',o.r.fx);r.w.classList.remove('glow');void r.w.offsetWidth;r.w.classList.add('glow');tm.push(setTimeout(()=>f.remove(),1600));if(o.r.gold)spray(r,40,1)}
@@ -220,9 +224,9 @@ if(!Lock.acquire('CASES')){App.toast('Another tab is wagering on Cases. Wait for
 const bet=App.bet(el,'CASES',1);if(!bet){Lock.release('CASES');return}
 busy=true;clearInterval(hb);hb=setInterval(()=>{if(!Lock.beat('CASES'))Lock.acquire('CASES')},LOCK_BEAT);
 /* 1) every row's real result is rolled first (unchanged RNG). 2) only then is its presentation chosen. Extra rows come from the Pirate perk queue and are consumed by this wager. */
-const extra=typeof Perks!=='undefined'?Perks.takeRows():0;setRows(extra);
+const extra=typeof Perks!=='undefined'?Perks.rows():0;setRows(extra);
 const dev=isDev()?api.dev:null,spd=perkSpeed(Store.d.rk);rd={bet,settled:false,finished:false};
-R.forEach((r,i)=>{r.done=false;r.landing=false;r.hi=-1;let o=roll(),pr,frc=false;
+R.forEach((r,i)=>{r.done=false;r.landing=false;r.hi=-1;let o=roll(i>0),pr,frc=false;
 if(i===0){if(dev&&dev.rar&&dev.left>0){o=lookOf(dev.rar);frc=true;if(--dev.left<=0){dev.rar=null;dev.left=0}}if(!frc&&dev&&(dev.fake||dev.tip)){o=rollReal();pr=present(o,rnd,dev);if(pr.fake)dev.fake=0;else dev.tip=0}else pr=present(o,rnd)}else pr=present(o,rnd);
 r.o=o;r.fake=pr.fake;r.tip=pr.tip;r.look=pr.look});
 go.disabled=true;go.textContent='Opening…';br.classList.add('dis');bi.disabled=true;
@@ -240,6 +244,6 @@ go.onclick=()=>spin();
 const rest=()=>{if(!busy)R.forEach(r=>{r.sr.style.transform=`translate3d(${center(r,r.sel)}px,0,0)`})};addEventListener('resize',rest);
 addEventListener('pagehide',leave);
 el.addEventListener('click',e=>{const m=e.target.closest('.mini');if(m)m.blur()});
-R=[mkRow(rowsEl.firstElementChild)];build(R[0]);life();goTxt();bonus();
+R=[mkRow(rowsEl.firstElementChild)];build(R[0]);try{setRows(typeof Perks!=='undefined'?Perks.rows():0)}catch(e){}life();goTxt();bonus();
 return()=>{removeEventListener('pagehide',leave);cancelAnimationFrame(raf);tm.forEach(clearTimeout);removeEventListener('resize',rest);closePt(true);if(busy)settleOnce();unlock()}}};
 return api})();

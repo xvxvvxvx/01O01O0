@@ -35,7 +35,8 @@ const App={cur:null,live:null,
 f:n=>(+n).toFixed(2),
 toast(m){let t=$('stk-toast');if(!t){t=document.createElement('div');t.id='stk-toast';document.body.appendChild(t)}
 t.textContent=m;t.className='';void t.offsetWidth;t.className='show '+(/lost|boom|splat|crash|not enough|enter a|minimum|at most/i.test(m)?'bad':/cashed|landed|reward|\+\$|saved/i.test(m)?'good':'')},
-bal(){document.querySelectorAll('.bal').forEach(e=>e.textContent=this.f(Store.d.balance));document.querySelectorAll('.gembal').forEach(e=>e.textContent=Store.d.gems);if(typeof Shell!=='undefined')Shell.update()},
+/* v2.75: .bal only exists in the home "Your Balance" section: 1,234.560 (display only) */
+bal(){document.querySelectorAll('.bal').forEach(e=>e.textContent=Econ.fmt3(Store.d.balance));document.querySelectorAll('.gembal').forEach(e=>e.textContent=Store.d.gems);if(typeof Shell!=='undefined')Shell.update()},
 betHTML(){return '<div class="betrow"><input class="bet" type="number" min="0.01" step="0.01" value="1"><button class="mini" data-m="0.5">½</button><button class="mini" data-m="2">2×</button></div>'},
 /* Wager path: validation lives in Econ.checkBet (not just the HTML input). */
 bet(el,game,keep){if(!Store.d.user){this.route();return 0}

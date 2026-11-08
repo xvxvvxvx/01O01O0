@@ -9,9 +9,9 @@ const armed=()=>{const d=Games.cases&&Games.cases.dev;return!!(d&&d.rar==='Pirat
 function open(){if(!DEVENV()||typeof Modal==='undefined'||document.querySelector('.devm'))return;
 const m=Modal.open(`<div class="devm"><p class="rdisc">DEVELOPER MENU<br><small>localhost only</small></p>
 <div class="dbx"><button class="btn" id="dv-pt" type="button">Guarantee Pirate Token</button><p id="dv-st" style="margin:8px 0 0;font-size:13px"></p></div>
-<div class="dbx"><label for="dv-t">Complete mastery level</label><select id="dv-t">${Mastery.tracks.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select>
+<div class="dbx"><label for="dv-t">Complete mastery level (then claim it)</label><select id="dv-t">${Mastery.tracks.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select>
 <select id="dv-l" aria-label="Level">${Array.from({length:Mastery.LV},(_,i)=>`<option value="${i+1}">Level ${i+1}</option>`).join('')}</select><button class="btn" id="dv-c" type="button" style="margin-top:8px">Complete level</button></div>
-<div class="dbx"><button class="btn dim" id="dv-r" type="button">Reset mastery</button><p style="margin:8px 0 0;font-size:12px">Clears all mastery progress and removes mastery cosmetics from the inventory.</p></div>
+<div class="dbx"><button class="btn dim" id="dv-r" type="button">Reset mastery</button><p style="margin:8px 0 0;font-size:12px">Clears all mastery progress and claims, and removes mastery cosmetics from the inventory.</p></div>
 <button class="btn dim" id="dv-x" type="button">Close</button></div>`,{label:'Developer menu',esc:()=>m.close()});
 const $=id=>document.getElementById(id),st=()=>{$('dv-st').textContent=armed()?'Armed: the next Cases wager drops a Pirate Token.':'Not armed.'},refresh=()=>{try{App.bal()}catch(e){}if(location.hash==='#mastery')App.route()};
 st();$('dv-x').onclick=()=>m.close();

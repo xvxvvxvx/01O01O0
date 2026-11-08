@@ -6,11 +6,11 @@ const src=fs.readFileSync(R('js/games/cases.js'),'utf8');
 const rows=[...src.matchAll(/k: '(\w+)'.*?min: ([\d.]+),\s*max: ([\d.]+),\s*p: ([\d.]+)/g)].map(m=>({k:m[1],lo:+m[2],hi:+m[3],p:+m[4]}));
 const rtp=rows.reduce((a,r)=>a+r.p/100*(r.lo+r.hi)/2,0);
 t('Cases: 8 tiers (incl. Pirate Token), odds total 100',rows.length===8&&Math.abs(rows.reduce((a,r)=>a+r.p,0)-100)<1e-9);
-t('Cases: Secret max is 30x',rows.find(r=>r.k==='Secret').hi===30);
-t('Cases: v2.6b ranges (Common .3-.85, Uncommon 1-1.25, Rare 1.35-1.8, Legendary 2.4-3.3, Mythic 3.6-4.9, Secret 6-30)',['Common:.3:.85','Uncommon:1:1.25','Rare:1.35:1.8','Legendary:2.4:3.3','Mythic:3.6:4.9','Secret:6:30'].every(x=>{const[k,a,b]=x.split(':'),r=rows.find(q=>q.k===k);return r.lo===+a&&r.hi===+b}));
+t('Cases: Secret max is 27x (v2.75)',rows.find(r=>r.k==='Secret').hi===27);
+t('Cases: v2.6b ranges (v2.75: Common .3-.8, Uncommon 1-1.2, Rare 1.3-1.7, Legendary 2.3-3.1, Mythic 3.4-4.6, Secret 6-27)',['Common:.3:.8','Uncommon:1:1.2','Rare:1.3:1.7','Legendary:2.3:3.1','Mythic:3.4:4.6','Secret:6:27'].every(x=>{const[k,a,b]=x.split(':'),r=rows.find(q=>q.k===k);return r.lo===+a&&r.hi===+b}));
 t('Cases: ranges never overlap and ascend',rows.slice(1).every((r,i,a)=>i===0||r.lo>=a[i-1].hi));
-t('Cases: return ~112.2% incl. the 0.05% Pirate Token jackpot ('+(rtp*100).toFixed(2)+'%)',rtp>1.12&&rtp<1.124);
-t('Cases: profit rounds 49.4%',Math.abs(rows.filter(r=>r.lo>=1).reduce((a,r)=>a+r.p,0)-49.4)<1e-9);
+t('Cases: return ~101.3% incl. the 0.04% Pirate Token jackpot ('+(rtp*100).toFixed(2)+'%)',rtp>1.012&&rtp<1.015);
+t('Cases: profit rounds 48.79%',Math.abs(rows.filter(r=>r.lo>=1).reduce((a,r)=>a+r.p,0)-48.79)<1e-9);
 // Aviamasters: plan() must be untouched (same RTP, win and profit rates as v2.5)
 const sb={console,Math,Date,Games:{},CFG:{AVI_SPEED:[[34,2.75],[30,2.5],[7,2],[3,1.5]]},document:{}};vm.createContext(sb);
 vm.runInContext(fs.readFileSync(R('js/games/aviamasters.js'),'utf8'),sb);const A=sb.Games.aviamasters,N=600000;let s=0,w=0,pf=0;

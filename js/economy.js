@@ -5,6 +5,7 @@ const Econ={
 r2:x=>Math.round(x*100)/100,
 fmt:n=>(+n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),
 fi:n=>Econ.fmt(n).replace(/\.00$/,''),
+fmt3:n=>(+n).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3}),   // v2.75: display only (home "Your Balance"): $1,234,567,890.123
 rnd(){try{return crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}catch(e){return Math.random()}},
 /* v2.25 anti-farming: minimum delay between wagers (shared by every tab via localStorage). Returns ms left to wait, or 0 and stamps the wager. */
 cool(game,now=Date.now()){const gap=CFG.GAP_MS[game];if(!gap)return 0;const k='steak_gap_'+game;let last=0;try{last=+localStorage.getItem(k)||0}catch(e){}

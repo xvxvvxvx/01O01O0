@@ -14,5 +14,5 @@ t('every rank money gate is reachable by grinding (<= 4x the round gate at 20% b
 const src=fs.readFileSync(path.join(__dirname,'../js/games/cases.js'),'utf8');
 const rows=[...src.matchAll(/min: ([\d.]+),\s*max: ([\d.]+),\s*p: ([\d.]+)/g)].map(m=>[+m[1],+m[2],+m[3]]);
 const rtp=rows.reduce((a,[lo,hi,p])=>a+p/100*(lo+hi)/2,0);
-t('Cases return is about 112.2% incl. the 0.05% Pirate Token ('+(rtp*100).toFixed(1)+'%)',Math.abs(rtp-1.12185)<.005);
+t('Cases return is about 101.3% incl. the 0.04% Pirate Token ('+(rtp*100).toFixed(1)+'%)',Math.abs(rtp-1.01335)<.005);
 console.log(pass+' passed, '+fail+' failed');process.exit(fail?1:0);
