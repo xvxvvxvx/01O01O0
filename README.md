@@ -48,6 +48,15 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 - Tests: `tests/update27.test.js` covers odds (exhaustive over all 10,000 weights), equal reward probability, row / speed caps, combined row multipliers and one-round counting, selling, instant rank-up and max-rank conversion, Mastery tracking and rewards, limited cosmetics (equip / persist / unsellable) and dev gating. `update23/25/26` were updated for the new Cases odds.
 - Known limits: the Mastery cash for an instant rank-up is paid after the rank-up (so it is not part of the 15% kept); `Pages.inventory` is wrapped (not edited) to show the unsellable badge.
 
+## Update 2.75 (permanent rows, manual Mastery claims, collections)
+- **Rows**: Pirate Token "+1 Case Row" is permanent, stacks, persists and is capped at 2 (the +2 reward is gone, 13 rewards at 1/13 each). Extra rows are never consumed by a wager.
+- **Rank-Up Ready** (was Instant Rank-Up): fulfils every current rank-up requirement (rank money and rounds) and leaves the actual rank-up to the Rank-Up page. If already ready or at max rank it becomes the $100,000 sale.
+- **Economy**: Cases has separate actual tables for the main row (`p`) and extra rows (`px`); `d` (displayed chances) is unchanged and is the only one shown. Higher rarities are rarer and multipliers slightly lower (main row ~101.3% return, extra rows ~34.3% each).
+- **Mastery**: rewards are claimed manually (CLAIM / CLAIM ALL). Completed, claimable and claimed are tracked separately and claiming never resets progress. Every level also gives Gems. v2.7 saves migrate with already-paid levels marked claimed. New Tag Collection and Gradient Collection objectives (10 tiers, unique ownership, Lv3 tag / Lv6 gradient / Lv10 tag).
+- **Cosmetics**: `js/limfx.js` holds 15 themed limited cosmetics with their own animation, particles, icon and palette; the Treasure Finder tag matches its gradient and The Pirate Gradient matches [THE PIRATE]; the King of the Pirates hat sits lower.
+- **UI**: Home "Your balance" shows `$1,234,567,890.123` (display only). The Tag and Gradient chests have distinct spin/open animations.
+- Tests: `node tests/update275.test.js` (plus the updated `update27`, `update23`, `update25`, `update26`).
+
 ## Latest changes
 - **Right Shift** (tap it on its own) toggles between the calculator and the game instead of Backspace. Backspace is now always the calculator's delete key. The tip in the game header says so.
 - **Calculator page**: light/dark mode switch (remembered in `localStorage`), a right-hand side bar with an interactive periodic table (`js/ptable.js`). Clicking the Gold (Au) element opens the game, the same way `0 - 100 =` does.

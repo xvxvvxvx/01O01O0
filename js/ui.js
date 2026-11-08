@@ -110,7 +110,7 @@ home(app){const s=Rank.status();Quests.sync();
 app.innerHTML=`<h2 class="sec">🤖 <span class="gold">Gold</span> Mini-games ›</h2><div class="cards">${LIST.map(([k,n])=>`<a class="card c-${k}" href="#${k}" aria-label="${n}" title="${n}"></a>`).join('')}</div>
 <div class="dash"><section class="dp" aria-label="Your Balance"><h3>💲 Your Balance ›</h3><div class="inner"><div class="wtop"><span class="wi">👛</span><div><small>Current Balance:</small><div class="big2">$<span class="bal"></span> </div><div class="gmrow">${gemIcon(20)} <b class="gembal"></b> Gems</div></div></div>
 <div class="who">${Cos.user(esc(Store.d.user),Store.d.eq.grad)} ${Store.d.eq.tag?Cos.html(Cos.by(Store.d.eq.tag)):'<span class="notag">[NO TAG]</span>'}</div>
-<div id="rsw"><button class="pillbtn sm" id="rs">Click to reset back to $${Econ.fi(Econ.startBalance())}</button></div><div class="stats">${Stats.html()}</div></div></section>
+<div id="rsw"><button class="pillbtn sm" id="rs">Click to reset back to $${Econ.fmt3(Econ.startBalance())}</button></div><div class="stats">${Stats.html()}</div></div></section>
 <section class="dp rkp" aria-label="Rank Status"><h3>🎖️ Rank Status ›</h3><div class="inner"><div class="rrow"><div><small>Current Rank:</small><div>${Badge.txt(s.idx)}</div></div>${Badge.svg(s.idx,52)}</div>
 ${s.max?'<p class="rq">Maximum rank reached!</p>':`<p class="rq">RANK-UP REQUIREMENTS:<br>$${Econ.fi(s.req.c)} and ${s.req.r} minigames played.</p>${Dash.rankBars(s)}<div class="rrow"><div><small>Next Rank:</small><div>${Badge.txt(s.idx+1)}</div></div>${Badge.svg(s.idx+1,52)}</div>`}
 <a class="rubtn" href="#rankup">Go to Rank-Up Page</a><p class="mline" data-bx></p></div></section>
@@ -118,7 +118,7 @@ ${s.max?'<p class="rq">Maximum rank reached!</p>':`<p class="rq">RANK-UP REQUIRE
 <section class="dp ptp" aria-label="User Playtime"><h3>🕑 User Playtime ›</h3><div class="inner"><div class="ptv" id="hb-pt">${playtimeTxt(Store.playtime().t)}</div></div></section>
 <div class="dash2"><section class="dp"><h3>📅 Daily Quests › <small class="rs"><span data-qreset="d"></span></small></h3><div class="inner" id="qd-in">${Dash.questBars('d')}</div></section>
 <section class="dp"><h3>🗓️ Weekly Quests › <small class="rs"><span data-qreset="w"></span></small></h3><div class="inner"><div id="qw-in">${Dash.questBars('w')}</div><a class="spinlink" href="#quests">Open Quests page</a></div></section></div>`;
-const w=Wheel.create($('hw')),rsw=$('rsw'),lbl=()=>`Click to reset back to $${Econ.fi(Econ.startBalance())}`,ask=()=>{rsw.innerHTML='<button class="pillbtn sm" id="ry" style="border-color:#ef4444;color:#fca5a5">Are you sure?</button> <button class="pillbtn sm" id="rn">Cancel</button>';
+const w=Wheel.create($('hw')),rsw=$('rsw'),lbl=()=>`Click to reset back to $${Econ.fmt3(Econ.startBalance())}`,ask=()=>{rsw.innerHTML='<button class="pillbtn sm" id="ry" style="border-color:#ef4444;color:#fca5a5">Are you sure?</button> <button class="pillbtn sm" id="rn">Cancel</button>';
 $('ry').onclick=()=>{Econ.resetBalance();App.route();App.toast('Balance reset to $'+Econ.fi(Econ.startBalance()))};$('rn').onclick=()=>{rsw.innerHTML=`<button class="pillbtn sm" id="rs">${lbl()}</button>`;$('rs').onclick=ask}};
 $('rs').onclick=ask;
 const qsig=()=>['d','w'].map(sc=>Quests.list(sc).map(q=>Quests.prog(sc,q)+':'+Quests.claimed(sc,q)).join()).join('|');let sg=qsig();
