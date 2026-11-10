@@ -34,7 +34,7 @@ t('rolled odds total 100 and displayed odds total 100',Math.abs(C.RAR.reduce((a,
 t('v2.75: higher rarities are LESS likely than in 2.7 (L 5.6->5.3, M 2.9->2.5, S 0.85->0.75, P 0.05->0.04) and rarer still on extra rows',[['Legendary',5.6,5.3],['Mythic',2.9,2.5],['Secret',.85,.75],['Pirate',.05,.04]].every(([k,o,n])=>{const r=C.RAR.find(x=>x.k===k);return r.p===n&&n<o&&r.px<n}));
 {const cnt={};let i=0,N=C.TOT;for(let s=0;s<N;s++){let first=true;const r=()=>{if(first){first=false;return (s+.5)/N}return .5};const o=C.roll(r);cnt[o.r.k]=(cnt[o.r.k]||0)+1}
 t('exhaustive roll over all 10,000 weights reproduces every probability exactly (Pirate = 4 / 10,000)',C.RAR.every(r=>cnt[r.k]===r.w)&&cnt.Pirate===4)}
-const rtp=C.evRow(false);t('Cases main-row return is about 101.3% ('+(rtp*100).toFixed(2)+'%)',Math.abs(rtp-1.01337)<1e-4);
+const rtp=C.evRow(false);t('Cases main-row return is about 101.3% ('+(rtp*100).toFixed(2)+'%)',Math.abs(rtp-1.01385)<2e-4);
 // ---- 2. Pirate reward table
 t('13 rewards (the +2 rows reward is gone), unique ids, exact list',Perks.LIST.length===13&&new Set(Perks.LIST.map(p=>p.id)).size===13&&Perks.LIST.map(p=>p.name).join('|')==='+1 Case Row|200 Gems|250 Gems|Case Speed +2x|Flight Speed +2x|Case Speed +3x|Flight Speed +3x|[THE PIRATE]|Treasure Finder Gradient|[TREASURE FINDER]|The Pirate Gradient|[KING OF THE PIRATES]|Rank-Up Ready'&&!Perks.LIST.some(p=>p.n===2&&p.kind==='row'));
 {const c={};for(let i=0;i<13;i++)c[Perks.roll(()=>(i+.5)/13).id]=1;t('every reward is selected by exactly one slice of the roll (equal 1/13)',Object.keys(c).length===13);

@@ -17,6 +17,7 @@ if(typeof Pages==='undefined'||typeof document==='undefined'||!Pages.shop)return
 const RM=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 const prev=c=>c.type==='grad'?Cos.user(esc(Store.d.user||'username'),c.id):Cos.html(c);
 const plural=(n,w)=>n+' '+w+(n===1?'':'s');
+const bar=t=>{const rs=Crate.RARS.filter(r=>t[r]>0);return `<div class="sx-bar" role="img" aria-label="Rarity odds: ${rs.map(r=>CFG.RAR[r].n+' '+pct(t[r])).join(', ')}">${rs.map(r=>`<i style="flex:${t[r]};background:${CFG.RAR[r].color}"></i>`).join('')}</div><div class="sx-bl">${rs.map(r=>`<span><i style="background:${CFG.RAR[r].color}"></i>${CFG.RAR[r].n} ${pct(t[r])}</span>`).join('')}</div>`};
 function paint(app){const root=app.querySelector('.crates');if(!root)return;
 const g=Store.d.gems,cost=CFG.CRATE.COST,rl=Math.floor(g/cost);root.dataset.g=g;
 const r=app.querySelector('.sx-rolls');if(r)r.textContent=rl?`= ${plural(rl,'crate roll')} available`:`Next roll in ${cost-g} more Gem${cost-g>1?'s':''}`;
@@ -29,9 +30,9 @@ const hd=document.createElement('div');hd.className='sx-head';
 hd.innerHTML=`<div class="sx-bal">${gemIcon(30)}<b class="gembal">${Store.d.gems}</b><span>Your Gems</span></div><div class="sx-mid"><b class="sx-rolls"></b><small>Earn Gems from ranking up, quests, Mastery and the Daily Wheel.</small></div><nav class="sx-nav" aria-label="Shop sections"><button type="button" data-go=".crates">Crates</button><button type="button" data-go=".conv">Convert Gems</button><button type="button" data-go="#pv">Preview all</button></nav>`;
 root.parentNode.insertBefore(hd,root);
 hd.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const t=app.querySelector(b.dataset.go);if(t)t.scrollIntoView({behavior:RM()?'auto':'smooth',block:'center'})});
-root.querySelectorAll('.crt').forEach(sec=>{const rb=sec.querySelector('[data-roll]');if(!rb)return;const m=model(rb.dataset.roll),K=m.K;sec.classList.add(K.cls);
+root.querySelectorAll('.crt').forEach(sec=>{const rb=sec.querySelector('[data-roll]');if(!rb)return;const m=model(rb.dataset.roll),K=m.K,tt=Crate.totals(rb.dataset.roll);sec.classList.add(K.cls);
 const v=document.createElement('div');v.className='sx-val';
-v.innerHTML=`<span class="sx-badge">${K.badge} CRATE</span><p class="sx-get"><b>You get:</b> ${K.get}</p>
+v.innerHTML=`<span class="sx-badge">${K.badge} CRATE</span><p class="sx-get"><b>You get:</b> ${K.get}</p>${bar(tt)}
 <div class="sx-prev" aria-label="Rarest prizes in this crate"><small>Rarest prizes</small>${m.top.map(c=>`<span class="sx-pi">${prev(c)}</span>`).join('')}</div>
 <ul class="sx-facts"><li>Legendary: <b style="color:${CFG.RAR.legendary.color}">${pct(m.legend)} per roll</b>${m.legendOne?` (about 1 in ${m.legendOne})`:''}</li><li>Your collection: <b>${m.own}/${m.all}</b> ${K.noun} owned${m.fresh?` &bull; ${m.fresh} still to find`:' &bull; complete!'}</li><li>Duplicates sell for <b>$${Econ.fi(m.dupMin)}${m.dupMax>m.dupMin?' to $'+Econ.fi(m.dupMax):''}</b> coin</li><li>Every roll costs <b>${m.cost}</b> ${gemIcon(14)} Gems</li></ul><div class="sx-aff" role="status"></div>`;
 const h=sec.querySelector('.crh');if(h)h.insertAdjacentElement('afterend',v)});

@@ -7,15 +7,16 @@ Games.cases=(()=>{
 // Rolled odds: X 30.6 / Common 20 / Uncommon 27 / Rare 13 / Legendary 5.6 / Mythic 2.9 / Secret 0.85 / Pirate 0.05 (total 100). "Case Odds" list shows X 26 / Common 25 / Uncommon 27 / Rare 13 / Legendary 5.4 / Mythic 2.9 / Secret 0.65 / Pirate 0.05 (total 100).
 // v2.6b economy: Secret pays 6-30x; Common .3-.85x, Uncommon 1-1.25x, Rare 1.35-1.8x, Legendary 2.4-3.3x, Mythic 3.6-4.9x, Pirate 100-150x. Return is now about 112.2%.
 // Presentation-only events (fake common, tip-over, tease, X flips) are decided AFTER the real result is rolled and never change it.
+// v2.9 rebalance: Legendary 3-4.6x (was 2.3-3.1), Mythic 4.6-7x (was 3.4-4.6), Secret 7-11x (was 6-27); Common .27-.76, Uncommon 1-1.1 and Rare 1.2-1.4 trimmed so the return stays ~101.4% (main row 1.0139, extra rows ~34.1% each). Odds (p, px, d) are unchanged.
 // ---- Odds config: p = percent actually rolled (two decimals max, must total 100); d = percent shown in the "Case Odds" list (display text only); fx = VFX colour; n = display name; gold = Pirate Token presentation ----
 const RAR = [
   { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 32.21, px: 70.74, d: 26, zero: 1 },
-  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .3,  max: .8, p: 19, px: 13, d: 25 },
-  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.2,p: 27, px: 10, d: 27 },
-  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.3,max: 1.7, p: 13.2, px: 4, d: 13 },
-  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 2.3, max: 3.1, p: 5.3, px: 1.5, d: 5.4,  fx: '#fbbf24' },
-  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 3.4, max: 4.6, p: 2.5, px: .6, d: 2.9, fx: '#ef4444' },
-  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 6, max: 27, p: .75, px: .15, d: .65, fx: '#e5e7eb' },
+  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .27, max: .76, p: 19, px: 13, d: 25 },
+  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.1,p: 27, px: 10, d: 27 },
+  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.2,max: 1.4, p: 13.2, px: 4, d: 13 },
+  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 3, max: 4.6, p: 5.3, px: 1.5, d: 5.4,  fx: '#fbbf24' },
+  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 4.6, max: 7, p: 2.5, px: .6, d: 2.9, fx: '#ef4444' },
+  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 7, max: 11, p: .75, px: .15, d: .65, fx: '#e5e7eb' },
   { k: 'Pirate',    n: 'Pirate Token', c: '#ffd84d', b: '#d4a017', ic: 'img/case-pirate.jpg', min: 95, max: 140, p: .04, px: .01, d: .05, fx: '#ffd84d', gold: 1 }
 ];
 const LIFE=['Legendary','Mythic','Secret','Pirate'],LOCK_BEAT=3000;

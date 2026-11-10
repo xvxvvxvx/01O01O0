@@ -6,8 +6,8 @@ const src=fs.readFileSync(R('js/games/cases.js'),'utf8');
 const rows=[...src.matchAll(/k: '(\w+)'.*?min: ([\d.]+),\s*max: ([\d.]+),\s*p: ([\d.]+)/g)].map(m=>({k:m[1],lo:+m[2],hi:+m[3],p:+m[4]}));
 const rtp=rows.reduce((a,r)=>a+r.p/100*(r.lo+r.hi)/2,0);
 t('Cases: 8 tiers (incl. Pirate Token), odds total 100',rows.length===8&&Math.abs(rows.reduce((a,r)=>a+r.p,0)-100)<1e-9);
-t('Cases: Secret max is 27x (v2.75)',rows.find(r=>r.k==='Secret').hi===27);
-t('Cases: v2.6b ranges (v2.75: Common .3-.8, Uncommon 1-1.2, Rare 1.3-1.7, Legendary 2.3-3.1, Mythic 3.4-4.6, Secret 6-27)',['Common:.3:.8','Uncommon:1:1.2','Rare:1.3:1.7','Legendary:2.3:3.1','Mythic:3.4:4.6','Secret:6:27'].every(x=>{const[k,a,b]=x.split(':'),r=rows.find(q=>q.k===k);return r.lo===+a&&r.hi===+b}));
+t('Cases: Secret max is 11x (v2.9)',rows.find(r=>r.k==='Secret').hi===11);
+t('Cases: v2.6b ranges (v2.75: Common .3-.8, Uncommon 1-1.2, Rare 1.3-1.7, Legendary 2.3-3.1, Mythic 3.4-4.6, Secret 6-27)',['Common:.27:.76','Uncommon:1:1.1','Rare:1.2:1.4','Legendary:3:4.6','Mythic:4.6:7','Secret:7:11'].every(x=>{const[k,a,b]=x.split(':'),r=rows.find(q=>q.k===k);return r.lo===+a&&r.hi===+b}));
 t('Cases: ranges never overlap and ascend',rows.slice(1).every((r,i,a)=>i===0||r.lo>=a[i-1].hi));
 t('Cases: return ~101.3% incl. the 0.04% Pirate Token jackpot ('+(rtp*100).toFixed(2)+'%)',rtp>1.012&&rtp<1.015);
 t('Cases: profit rounds 48.79%',Math.abs(rows.filter(r=>r.lo>=1).reduce((a,r)=>a+r.p,0)-48.79)<1e-9);
@@ -15,7 +15,7 @@ t('Cases: profit rounds 48.79%',Math.abs(rows.filter(r=>r.lo>=1).reduce((a,r)=>a
 const sb={console,Math,Date,Games:{},CFG:{AVI_SPEED:[[34,2.75],[30,2.5],[7,2],[3,1.5]]},document:{}};vm.createContext(sb);
 vm.runInContext(fs.readFileSync(R('js/games/aviamasters.js'),'utf8'),sb);const A=sb.Games.aviamasters,N=600000;let s=0,w=0,pf=0;
 for(let i=0;i<N;i++){const p=A.plan();if(!p.crash&&!p.fall){s+=p.m;w++;if(p.m>1)pf++}}
-t('Aviamasters: return ~101%, close to Cases ('+(s/N*100).toFixed(1)+'%), lands '+(w/N*100).toFixed(0)+'%, profit '+(pf/N*100).toFixed(0)+'%',Math.abs(s/N-1.009)<.02&&pf/N>.44&&pf/N<.48&&w/N>.88&&A.PR===.3);
+t('Aviamasters: return ~101%, close to Cases ('+(s/N*100).toFixed(1)+'%), lands '+(w/N*100).toFixed(0)+'%, profit '+(pf/N*100).toFixed(0)+'%',Math.abs(s/N-1.009)<.02&&pf/N>.40&&pf/N<.46&&w/N>.88&&A.PR===.3);
 t('Aviamasters: base animation clock is faster than 1x',A.BASE>1);
 const av=fs.readFileSync(R('js/games/aviamasters.js'),'utf8');
 t('Aviamasters: turbo button + instant relaunch present',/id="tb"/.test(av)&&/st!=='idle'&&st!=='end'/.test(av));

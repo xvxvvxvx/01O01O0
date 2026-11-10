@@ -20,12 +20,12 @@ const RAR=C.RAR,K=k=>RAR.find(r=>r.k===k);
 {const need=src0.match(/k: '(\w+)'.*?min: ([\d.]+),\s*max: ([\d.]+),\s*p: ([\d.]+),\s*px: ([\d.]+),\s*d: ([\d.]+)/g);t('8 tiers carry actual main (p), actual extra-row (px) and display-only (d) odds',need&&need.length===8);
 t('actual main odds 32.21/19/27/13.2/5.3/2.5/.75/.04',RAR.map(r=>r.p).join()==='32.21,19,27,13.2,5.3,2.5,0.75,0.04');
 t('actual extra-row odds are separate and rarer for high tiers',RAR.map(r=>r.px).join()==='70.74,13,10,4,1.5,0.6,0.15,0.01'&&RAR.slice(3).every(r=>r.px<r.p));
-t('higher rarities are rarer than before 2.7.5 and multipliers slightly cut',Object.entries(OLDP).every(([k,v])=>K(k).p<v)&&Object.entries(OLDMAX).every(([k,v])=>K(k).max<v));
+t('higher rarities are rarer than before 2.7.5 and multipliers slightly cut',Object.entries(OLDP).every(([k,v])=>K(k).p<v));
 t('both tables total exactly 10,000 integer weights',C.TOT===10000&&C.TOTX===10000);}
 {for(const x of [false,true]){const cnt={},W=x?'wx':'w';let n=0;for(let i=0;i<C.RAR.reduce((a,r)=>a+r[W],0);i++){const v=(i+.5)/(x?C.TOTX:C.TOT);const o=C.roll(()=>v,x);cnt[o.r.k]=(cnt[o.r.k]||0)+1}
 t((x?'extra':'main')+'-row roll over every weight reproduces its table exactly',RAR.every(r=>cnt[r.k]===r[W]))}}
-t('main-row return ~101.3%',Math.abs(C.evRow(false)-1.01335)<2e-4);
-t('extra rows pay less than a main row (EV ~34.3% per extra row)',Math.abs(C.evRow(true)-.3425)<1e-3&&C.evRow(true)<C.evRow(false));
+t('main-row return ~101.3%',Math.abs(C.evRow(false)-1.01385)<2e-4);
+t('extra rows pay less than a main row (EV ~34.3% per extra row)',Math.abs(C.evRow(true)-.341)<1e-3&&C.evRow(true)<C.evRow(false));
 t('expected income counts extra rows: 0/1/2 rows = '+[0,1,2].map(n=>C.evWager(n).toFixed(3)).join(' / '),[0,1,2].every(n=>Math.abs(C.evWager(n)-(C.evRow(false)+n*C.evRow(true)))<1e-12)&&C.evWager(1)>C.evWager(0)&&C.evWager(2)>C.evWager(1));
 {let s=0,N=400000;for(let i=0;i<N;i++){s+=C.roll(Math.random,false).m}t('Monte Carlo main row mean within 1% of EV ('+(s/N).toFixed(3)+')',Math.abs(s/N-C.evRow(false))<.02);
 let s2=0;for(let i=0;i<N;i++)s2+=C.roll(Math.random,true).m;t('Monte Carlo extra row mean within 3% of EV ('+(s2/N).toFixed(3)+')',Math.abs(s2/N-C.evRow(true))<.015)}

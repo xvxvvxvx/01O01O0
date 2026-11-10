@@ -10,9 +10,9 @@ t('canvas font fix maps Montserrat/Playfair/Times to Fredoka',U.fontFix("900 40p
 const css=fs.readFileSync(R('css/update28.css'),'utf8'),ld=fs.readFileSync(R('js/loader.js'),'utf8'),gh=fs.readFileSync(R('game.html'),'utf8'),sw=fs.readFileSync(R('sw.js'),'utf8');
 t('Fredoka loaded (Google Fonts) and applied with fallbacks; Playfair/Montserrat links removed',/family=Fredoka/.test(gh)&&!/Playfair|Montserrat/.test(gh)&&/'Fredoka','Trebuchet MS',system-ui,sans-serif!important/.test(css)&&/--serif:'Fredoka'/.test(css));
 t('game.html has no 01O0 text and loads update28.css',!/01O0/.test(gh)&&/css\/update28\.css/.test(gh));
-t('loader keeps dev.js localhost-only and loads update28 last of the prod files',/LOCAL\?\['dev'\]:\[\]/.test(ld)&&/'pirate','update28'\]/.test(ld));
+t('loader keeps dev.js localhost-only and loads update28 last of the prod files',/LOCAL\?\['dev'\]:\[\]/.test(ld)&&/'progress','update28','update29'\]/.test(ld));
 t('update28.js and loader.js parse as script text',(()=>{try{new Function(fs.readFileSync(R('js/update28.js'),'utf8')+'\n;\n'+fs.readFileSync(R('js/loader.js'),'utf8'));return true}catch(e){console.log(e.message);return false}})());
-t('service worker caches update28 files with a bumped cache name',sw.includes("'css/update28.css'")&&sw.includes("'js/update28.js'")&&/gold-offline-v2\.8\.0/.test(sw));
+t('service worker caches update28 files with a bumped cache name',sw.includes("'css/update28.css'")&&sw.includes("'js/update28.js'")&&/gold-offline-v2\.9\.0/.test(sw));
 t('Limited rarity: animated black, white outline, reduced-motion respected, not gold',/#f5f5f5/.test(css)&&/border:2px solid #fff/.test(css)&&/lmBlk/.test(css)&&/prefers-reduced-motion/.test(css));
 t('gem chip no longer absolutely positioned (no overlap)',/\.gemchip\{position:static/.test(css));
 console.log(`\n${pass} passed, ${fail} failed`);process.exit(fail?1:0);
