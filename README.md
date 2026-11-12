@@ -74,11 +74,6 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 - **Aviamasters**: jackpot ranges 10-25x / 25-50x / 50-100x / 100-250x / 250-300x (chances .20 / .08 / .03 / .022 / .02% per landed flight); base items trimmed to keep ~101% return; the landing-chances dropdown opens and closes smoothly.
 - Tests: `node tests/update295.test.js`.
 
-## Latest changes
-- **Right Shift** (tap it on its own) toggles between the calculator and the game instead of Backspace. Backspace is now always the calculator's delete key. The tip in the game header says so.
-- **Calculator page**: light/dark mode switch (remembered in `localStorage`), a right-hand side bar with an interactive periodic table (`js/ptable.js`). Clicking the Gold (Au) element opens the game, the same way `0 - 100 =` does.
-- **Removed** the cloud profile / cosmetics cloud-sync integration (its script, demo page and settings panel). Saves are local only.
-
 ## Tests
 `node tests/update245.test.js`, `node tests/update23.test.js`, `node tests/update25.test.js`, `node tests/update26.test.js`, `node tests/update27.test.js`, `node tests/update275.test.js`, `node tests/update295.test.js`, `node tests/update28.test.js`, `node tests/economy.test.js`, `node tests/security.test.js`
 
