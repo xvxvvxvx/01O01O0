@@ -1,5 +1,5 @@
-# 01O0
-Free-to-play simulator using fictional **01O0coin** currency.
+# Gold/Steak/01O0
+Free-to-play simulator using fictional currency.
 
 ## Notes
 - Leaving a round mid-game forfeits the wager.
@@ -43,10 +43,6 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
   - `[THE PIRATE]` waving pirate flag + animated black-and-white gradient; Treasure Finder Gradient (gold and sea-glass, sparkles); `[TREASURE FINDER]` animated gold + rising coins; The Pirate Gradient animated gold + falling coins; `[KING OF THE PIRATES]` bobbing straw hat + animated white-and-red gradient.
 - **Mastery** (`js/mastery.js`, sidebar page below Quests; the Quests icon is now a checkbox, Mastery uses a medal): 17 independent objectives x 10 levels - Cases opened, Aviamasters flights, Blackjack games, Plinko balls, Mines / Flip / Double or Nothing / Chicken games, Legendary / Mythic / Secret case drops, Pirate Tokens, Aviamasters landings at 4-5x / 5-6x / 6-7x / 7x+, and instant rank-ups. Early levels are easy (e.g. 20 Mines games = $250), later levels need far more and pay far more. Rewards are paid automatically (banner + confetti). Each objective has cosmetics at Level 3 (tag), 6 (gradient) and 10 (tag), e.g. Aviamasters flights Lv 3 = `[FLIGHT TAKER]` (wind effect on a cloudy blue gradient). The page shows progress, next milestone and every tier's requirement, cash and cosmetic preview.
   - Counting: games count when the round settles (`Econ.settle` is wrapped); Blackjack split hands count as one game; Cases count every row; Aviamasters landing bands use the raw gross/bet multiplier ([4,5) [5,6) [6,7) [7,inf), unaffected by the 2X bonus). Cash is a wallet credit (not profit / rank money / quest progress). Progress lives in its own signed key `0-100_v2.7_mastery`; existing saves are untouched.
-- **Developer menu** (`js/dev.js`): press `Up Up Down Down D E V`. It exists **only** on localhost / 127.0.0.1 / [::1] / `file:` (`DEVENV()` in `js/limited.js`); the loader does not even fetch `dev.js` elsewhere and every entry point re-checks `DEVENV()`, so the shortcut does nothing in production. Options: guarantee a Pirate Token on the next Cases wager, complete a chosen Mastery level (pays all levels up to it), reset all Mastery (also removes Mastery cosmetics from the inventory). `Games.cases.dev={rar:'Pirate',left:1}` in the console is now also ignored outside dev environments.
-- Icon: `img/case-pirate.jpg` is a white placeholder, replace the file and keep the name. `sw.js` pre-caches `limited.js`, `mastery.js`, `pirate.js` (cache `gold-offline-v2.7.1`); `dev.js` is intentionally not cached.
-- Tests: `tests/update27.test.js` covers odds (exhaustive over all 10,000 weights), equal reward probability, row / speed caps, combined row multipliers and one-round counting, selling, instant rank-up and max-rank conversion, Mastery tracking and rewards, limited cosmetics (equip / persist / unsellable) and dev gating. `update23/25/26` were updated for the new Cases odds.
-- Known limits: the Mastery cash for an instant rank-up is paid after the rank-up (so it is not part of the 15% kept); `Pages.inventory` is wrapped (not edited) to show the unsellable badge.
 
 ## Update 2.75 (permanent rows, manual Mastery claims, collections)
 - **Rows**: Pirate Token "+1 Case Row" is permanent, stacks, persists and is capped at 2 (the +2 reward is gone, 13 rewards at 1/13 each). Extra rows are never consumed by a wager.
@@ -71,7 +67,6 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 
 ## Update 2.95 (exploit fixes, k/m/b wagers, two goal bars, balance)
 - **Mines**: at most 23 mines (24 = one diamond is gone); a round lost with no safe tile no longer counts as a played round; 1.5 s gap between rounds (`CFG.GAP_MS`). Rounds under a $1 wager (`CFG.ROUND_MIN_BET`), abandoned rounds and extra Blackjack split hands no longer count for rank/quests/Mastery.
-- **Exploit Audit**: see `EXPLOIT_AUDIT.md`.
 - **Wagers** accept `k`, `m`, `b` (`1.5k` = 1,500, `2m` = 2,000,000, `1b`) in every game, including the ½ and 2x buttons.
 - **Your Goal**: money and rounds are two separate bars, shown at the top of every game page (and on Home), with an eye button that hides/shows them (remembered).
 - **Cases**: every tier raised (Common .28-.78 ... Pirate 100-145). Main-row return ~104.5%; extra rows still ~34.2% each.
@@ -86,3 +81,6 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 
 ## Tests
 `node tests/update245.test.js`, `node tests/update23.test.js`, `node tests/update25.test.js`, `node tests/update26.test.js`, `node tests/update27.test.js`, `node tests/update275.test.js`, `node tests/update295.test.js`, `node tests/update28.test.js`, `node tests/economy.test.js`, `node tests/security.test.js`
+
+Much love,
+- Night n Claude <3
