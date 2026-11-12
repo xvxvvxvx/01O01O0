@@ -48,3 +48,24 @@
 /* ---------- Aviamasters chance panel ---------- */
 .avp{order:8;border:2px solid #ffffff44;border-radius:12px;padding:6px 8px;font-size:12px}.avp summary{cursor:pointer;font-weight:700}.avp table{width:100%;border-collapse:collapse;margin-top:4px}
 .avp td{padding:1px 2px}.avp td:last-child{text-align:right;font-variant-numeric:tabular-nums}.avp tr.l td:first-child{color:#f87171}.avp tr.w td:first-child{color:#4ade80}.avp tr.j td:first-child{color:#fde047;font-weight:700}.avp tr.j.top td{color:#fde047;text-shadow:0 0 8px #fde04788}.avp small{color:#a3a3a3;display:block;margin-top:4px;line-height:1.3}
+
+/* ---------- v2.95: two-bar goal strip + eye toggle ---------- */
+#goalbar{align-items:center;flex-wrap:nowrap}
+.gb-bars{display:grid;gap:3px;margin-top:2px}
+.gb-row{display:grid;grid-template-columns:54px minmax(80px,1fr) auto;align-items:center;gap:8px;font-size:11px}
+.gb-row .gb-l{color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.gb-row .gb-t{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.gb-row:nth-child(2) .gb-bar i{background:#60a5fa}
+.gb-eye{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;border:0;border-radius:8px;background:none;color:#fff;cursor:pointer;opacity:.8}
+.gb-eye:hover,.gb-eye:focus-visible{opacity:1;background:#ffffff1a}
+.gl h3 .gb-eye{vertical-align:middle;margin-left:6px}
+.gl .gb-bars{margin:8px 0}.gl .gb-row{font-size:12px;grid-template-columns:64px minmax(100px,1fr) auto}.gl .gb-bar{height:10px}
+@media(max-width:700px){#goalbar{flex-wrap:wrap}.gb-row{grid-template-columns:48px 1fr auto}.gb-t{display:inline!important}}
+/* Aviamasters landing-chances dropdown: smooth open/close (height animated by js/games/aviamasters.js via --h) */
+.avp .avp-body{overflow:hidden;height:0;opacity:0;transition:height .28s ease,opacity .22s ease}
+.avp[open] .avp-body{opacity:1}
+.avp summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.avp summary::-webkit-details-marker{display:none}
+.avp summary::after{content:'▾';transition:transform .28s ease;font-size:12px}
+.avp[open] summary::after{transform:rotate(180deg)}
+@media(prefers-reduced-motion:reduce){.avp .avp-body,.avp summary::after{transition:none}}
