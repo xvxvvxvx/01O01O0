@@ -16,7 +16,7 @@ const RT=p=>path.join(__dirname,'..',p),src0=fs.readFileSync(RT('js/games/cases.
 (async()=>{
 // ---- 0. carried over from the original 2.7 test (Pirate Token presentation, persistence, offline cache), updated for 0.05%
 {const rowsx=[...src0.matchAll(/k: '(\w+)'.*?min: ([\d.]+),\s*max: ([\d.]+),\s*p: ([\d.]+),\s*px: ([\d.]+),\s*d: ([\d.]+)/g)].map(m=>({k:m[1],lo:+m[2],hi:+m[3],p:+m[4],px:+m[5],d:+m[6]})),pp=rowsx.find(r=>r.k==='Pirate');
-t('source: Pirate Token is the 8th and rarest tier, rolled 0.04% (extra rows 0.01%), shown 0.05%, pays 95-140x',rowsx.length===8&&rowsx[7].k==='Pirate'&&rowsx.every(r=>r.p>=pp.p&&r.px>=pp.px)&&pp.p===.04&&pp.px===.01&&pp.d===.05&&pp.lo===95&&pp.hi===140);
+t('source: Pirate Token is the 8th and rarest tier, rolled 0.04% (extra rows 0.01%), shown 0.05%, pays 100-145x (v2.95)',rowsx.length===8&&rowsx[7].k==='Pirate'&&rowsx.every(r=>r.p>=pp.p&&r.px>=pp.px)&&pp.p===.04&&pp.px===.01&&pp.d===.05&&pp.lo===100&&pp.hi===145);
 t('source: rolled odds (both tables) total 100 and map to 10,000 integer weights; displayed odds total 100',[ 'p','px'].every(k=>Math.abs(rowsx.reduce((a,r)=>a+r[k],0)-100)<1e-9&&rowsx.reduce((a,r)=>a+Math.round(r[k]*100),0)===10000)&&Math.abs(rowsx.reduce((a,r)=>a+r.d,0)-100)<1e-9);
 t('icon is img/case-pirate.jpg and the file is a real JPEG',/ic: 'img\/case-pirate\.jpg'/.test(src0)&&fs.existsSync(RT('img/case-pirate.jpg'))&&fs.readFileSync(RT('img/case-pirate.jpg')).slice(0,2).toString('hex')==='ffd8');
 t('cinematic text is "PIRATE TOKEN" / "NEW RARITY ACHIEVED" and is still in the source',src0.includes('>PIRATE TOKEN<')&&src0.includes('>NEW RARITY ACHIEVED<'));
@@ -29,12 +29,12 @@ t('sw.js pre-caches the 2.7 scripts (limited, mastery, pirate) and never dev.js'
 t('loader.js loads limited before storage, mastery after crates, pirate after the games',(()=>{const l=fs.readFileSync(J('loader'),'utf8'),i=n=>l.indexOf("'"+n+"'");return i('limited')<i('storage')&&i('mastery')>i('crates')&&i('pirate')>i('games/guessthecup')})())}
 // ---- 1. Cases odds
 const src=fs.readFileSync(J('games/cases'),'utf8'),pr=C.RAR.find(r=>r.k==='Pirate');
-t('Pirate Token rolled exactly 0.04% (shown 0.05%), pays 95-140x',pr.p===.04&&pr.d===.05&&pr.min===95&&pr.max===140&&pr.w===4&&pr.wx===1&&C.TOT===10000&&C.TOTX===10000);
+t('Pirate Token rolled exactly 0.04% (shown 0.05%), pays 100-145x (v2.95)',pr.p===.04&&pr.d===.05&&pr.min===100&&pr.max===145&&pr.w===4&&pr.wx===1&&C.TOT===10000&&C.TOTX===10000);
 t('rolled odds total 100 and displayed odds total 100',Math.abs(C.RAR.reduce((a,r)=>a+r.p,0)-100)<1e-9&&Math.abs(C.RAR.reduce((a,r)=>a+r.d,0)-100)<1e-9);
 t('v2.75: higher rarities are LESS likely than in 2.7 (L 5.6->5.3, M 2.9->2.5, S 0.85->0.75, P 0.05->0.04) and rarer still on extra rows',[['Legendary',5.6,5.3],['Mythic',2.9,2.5],['Secret',.85,.75],['Pirate',.05,.04]].every(([k,o,n])=>{const r=C.RAR.find(x=>x.k===k);return r.p===n&&n<o&&r.px<n}));
 {const cnt={};let i=0,N=C.TOT;for(let s=0;s<N;s++){let first=true;const r=()=>{if(first){first=false;return (s+.5)/N}return .5};const o=C.roll(r);cnt[o.r.k]=(cnt[o.r.k]||0)+1}
 t('exhaustive roll over all 10,000 weights reproduces every probability exactly (Pirate = 4 / 10,000)',C.RAR.every(r=>cnt[r.k]===r.w)&&cnt.Pirate===4)}
-const rtp=C.evRow(false);t('Cases main-row return is about 101.3% ('+(rtp*100).toFixed(2)+'%)',Math.abs(rtp-1.01385)<2e-4);
+const rtp=C.evRow(false);t('Cases main-row return is about 104.5% (v2.95) ('+(rtp*100).toFixed(2)+'%)',Math.abs(rtp-1.04542)<2e-4);
 // ---- 2. Pirate reward table
 t('13 rewards (the +2 rows reward is gone), unique ids, exact list',Perks.LIST.length===13&&new Set(Perks.LIST.map(p=>p.id)).size===13&&Perks.LIST.map(p=>p.name).join('|')==='+1 Case Row|200 Gems|250 Gems|Case Speed +2x|Flight Speed +2x|Case Speed +3x|Flight Speed +3x|[THE PIRATE]|Treasure Finder Gradient|[TREASURE FINDER]|The Pirate Gradient|[KING OF THE PIRATES]|Rank-Up Ready'&&!Perks.LIST.some(p=>p.n===2&&p.kind==='row'));
 {const c={};for(let i=0;i<13;i++)c[Perks.roll(()=>(i+.5)/13).id]=1;t('every reward is selected by exactly one slice of the roll (equal 1/13)',Object.keys(c).length===13);

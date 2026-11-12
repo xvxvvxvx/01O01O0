@@ -59,13 +59,13 @@ Object.assign(H,{g:{},lock:0});x=60000;const gaps=[310,420,275,560,390,330,480,2
 Object.assign(H,{g:{},lock:0});Guard.mark(true,false,90000);Guard.take('D',90000);Guard.mark(true,false,90030);t('two wagers < 60 ms apart: the second is dropped (double-fire)',!Guard.take('D',90030).ok)}
 // ---- Aviamasters tuning
 {const P=Games.aviamasters.plan,N=800000;let s=0,w=0;for(let i=0;i<N;i++){const p=P();if(!p.crash&&!p.fall){s+=p.m;w++}}const rtp=s/N;
-{let pf=0;for(let i=0;i<N;i++){const p=P();if(!p.crash&&!p.fall&&p.m>1)pf++}t(`v2.5 Aviamasters economy: RTP ~99% (${(rtp*100).toFixed(1)}%), lands ${(w/N*100).toFixed(0)}%, profit ${(pf/N*100).toFixed(0)}%`,Math.abs(rtp-.99)<.04&&pf/N>.41&&pf/N<.48&&w/N>.88&&Games.aviamasters.PR===.3)}}
+{let pf=0;for(let i=0;i<N;i++){const p=P();if(!p.crash&&!p.fall&&p.m>1)pf++}t(`v2.95 Aviamasters economy: RTP ~101% (${(rtp*100).toFixed(1)}%), lands ${(w/N*100).toFixed(0)}%, profit ${(pf/N*100).toFixed(0)}%`,Math.abs(rtp-1.0096)<.025&&pf/N>.33&&pf/N<.42&&w/N>.88&&Games.aviamasters.PR===.3)}}
 // ---- Cases X outcome (odds updated for v2.7)
 {const RA=C.RAR,sp=RA.reduce((a,r)=>a+r.p,0),sd=RA.reduce((a,r)=>a+r.d,0),g=k=>RA.find(r=>r.k===k);
 t('v2.75 Cases actual main-row odds: X32.21/C19/U27/R13.2/L5.3/M2.5/S0.75/P0.04',RA.map(r=>r.k+r.p).join()==='X32.21,Common19,Uncommon27,Rare13.2,Legendary5.3,Mythic2.5,Secret0.75,Pirate0.04'&&Math.abs(sp-100)<1e-9);
 t('v2.7 Cases DISPLAYED odds: X26/C25/U27/R13/L5.4/M2.9/S0.65/P0.05 (total 100)',RA.map(r=>r.k+r.d).join()==='X26,Common25,Uncommon27,Rare13,Legendary5.4,Mythic2.9,Secret0.65,Pirate0.05'&&Math.abs(sd-100)<1e-9);
 t('X is a red 0x outcome',g('X').zero===1&&g('X').min===0&&g('X').max===0&&g('X').c==='#ef4444');
-{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.75 Cases economy: RTP ~101.3% ('+(rtp*100).toFixed(1)+'%), 48.79% of rounds in profit',Math.abs(rtp-1.01335)<.005&&Math.abs(pr-48.79)<1e-9)}
+{const rtp=RA.reduce((x,r)=>x+r.p/100*(r.min+r.max)/2,0),pr=RA.filter(r=>r.min>=1).reduce((x,r)=>x+r.p,0);t('v2.95 Cases economy: RTP ~104.5% ('+(rtp*100).toFixed(1)+'%), 48.79% of rounds in profit',Math.abs(rtp-1.0454)<.003&&Math.abs(pr-48.79)<1e-9)}
 t('X flips are rare (<=6%)',C.XDOWN_P<=.06&&C.XUP_P<=.06);
 const XP=k=>{let f=0,n=100000;for(let i=0;i<n;i++){const p=C.present(mk(k),Math.random);if(p.fake)f++}return f/n};
 t('X is shown as Common/Uncommon/Rare then flips (~'+C.XDOWN_P*100+'%)',Math.abs(XP('X')-C.XDOWN_P)<.006);
