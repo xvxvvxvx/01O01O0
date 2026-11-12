@@ -69,10 +69,20 @@ Gem-Shop cleanup (no rotation timer), crate-opening Skip button fixed in its own
 - **Files**: new `css/update28.css`, `js/update28.js`, `tests/update28.test.js`; modified `game.html`, `js/loader.js` (loads `update28` last), `sw.js` (cache `gold-offline-v2.8.0`, new files pre-cached), `README.md`.
 - Tests: `node tests/update28.test.js`.
 
+## Update 2.95 (exploit fixes, k/m/b wagers, two goal bars, balance)
+- **Mines**: at most 23 mines (24 = one diamond is gone); a round lost with no safe tile no longer counts as a played round; 1.5 s gap between rounds (`CFG.GAP_MS`). Rounds under a $1 wager (`CFG.ROUND_MIN_BET`), abandoned rounds and extra Blackjack split hands no longer count for rank/quests/Mastery.
+- **Exploit Audit**: see `EXPLOIT_AUDIT.md`.
+- **Wagers** accept `k`, `m`, `b` (`1.5k` = 1,500, `2m` = 2,000,000, `1b`) in every game, including the ½ and 2x buttons.
+- **Your Goal**: money and rounds are two separate bars, shown at the top of every game page (and on Home), with an eye button that hides/shows them (remembered).
+- **Cases**: every tier raised (Common .28-.78 ... Pirate 100-145). Main-row return ~104.5%; extra rows still ~34.2% each.
+- **Daily Spin**: cash and Gem rewards grow +10% of base per rank (x1 at Unranked). The wheel page shows your rank's ranges.
+- **Aviamasters**: jackpot ranges 10-25x / 25-50x / 50-100x / 100-250x / 250-300x (chances .20 / .08 / .03 / .022 / .02% per landed flight); base items trimmed to keep ~101% return; the landing-chances dropdown opens and closes smoothly.
+- Tests: `node tests/update295.test.js`.
+
 ## Latest changes
 - **Right Shift** (tap it on its own) toggles between the calculator and the game instead of Backspace. Backspace is now always the calculator's delete key. The tip in the game header says so.
 - **Calculator page**: light/dark mode switch (remembered in `localStorage`), a right-hand side bar with an interactive periodic table (`js/ptable.js`). Clicking the Gold (Au) element opens the game, the same way `0 - 100 =` does.
 - **Removed** the cloud profile / cosmetics cloud-sync integration (its script, demo page and settings panel). Saves are local only.
 
 ## Tests
-`node tests/update245.test.js`, `node tests/update23.test.js`, `node tests/update25.test.js`, `node tests/update26.test.js`, `node tests/update27.test.js`, `node tests/update275.test.js`, `node tests/update28.test.js`, `node tests/economy.test.js`, `node tests/security.test.js`
+`node tests/update245.test.js`, `node tests/update23.test.js`, `node tests/update25.test.js`, `node tests/update26.test.js`, `node tests/update27.test.js`, `node tests/update275.test.js`, `node tests/update295.test.js`, `node tests/update28.test.js`, `node tests/economy.test.js`, `node tests/security.test.js`
