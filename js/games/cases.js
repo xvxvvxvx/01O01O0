@@ -8,16 +8,18 @@ Games.cases=(()=>{
 // v2.6b economy: Secret pays 6-30x; Common .3-.85x, Uncommon 1-1.25x, Rare 1.35-1.8x, Legendary 2.4-3.3x, Mythic 3.6-4.9x, Pirate 100-150x. Return is now about 112.2%.
 // Presentation-only events (fake common, tip-over, tease, X flips) are decided AFTER the real result is rolled and never change it.
 // v2.9 rebalance: Legendary 3-4.6x (was 2.3-3.1), Mythic 4.6-7x (was 3.4-4.6), Secret 7-11x (was 6-27); Common .27-.76, Uncommon 1-1.1 and Rare 1.2-1.4 trimmed so the return stays ~101.4% (main row 1.0139, extra rows ~34.1% each). Odds (p, px, d) are unchanged.
+// v2.95 rebalance (every tier raised a little): Common .28-.78, Uncommon 1.02-1.12, Rare 1.22-1.45, Legendary 3.1-4.8, Mythic 4.8-7.2, Secret 7.4-11.6, Pirate 100-145. Main row return 101.4% -> ~104.5% (profit rounds still 48.79%: Common stays below 1x, Uncommon starts above it).
+//   Extra-row odds (px) were retuned (X 70.74 -> 71.64, Common 13 -> 12.8, Uncommon 10 -> 9.3) so an extra row stays ~34.2% (was 34.1%): 2 permanent extra rows ~173% per wager (was ~170%), i.e. the Pirate perk does not become a coin printer. Rolled (p) odds are unchanged.
 // ---- Odds config: p = percent actually rolled (two decimals max, must total 100); d = percent shown in the "Case Odds" list (display text only); fx = VFX colour; n = display name; gold = Pirate Token presentation ----
 const RAR = [
-  { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 32.21, px: 70.74, d: 26, zero: 1 },
-  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .27, max: .76, p: 19, px: 13, d: 25 },
-  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1,   max: 1.1,p: 27, px: 10, d: 27 },
-  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.2,max: 1.4, p: 13.2, px: 4, d: 13 },
-  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 3, max: 4.6, p: 5.3, px: 1.5, d: 5.4,  fx: '#fbbf24' },
-  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 4.6, max: 7, p: 2.5, px: .6, d: 2.9, fx: '#ef4444' },
-  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 7, max: 11, p: .75, px: .15, d: .65, fx: '#e5e7eb' },
-  { k: 'Pirate',    n: 'Pirate Token', c: '#ffd84d', b: '#d4a017', ic: 'img/case-pirate.jpg', min: 95, max: 140, p: .04, px: .01, d: .05, fx: '#ffd84d', gold: 1 }
+  { k: 'X',         c: '#ef4444', b: '#ef4444', min: 0, max: 0,          p: 32.21, px: 71.64, d: 26, zero: 1 },
+  { k: 'Common',    c: '#a3a3a3', ic: 'img/case-common.png',    min: .28, max: .78, p: 19, px: 12.8, d: 25 },
+  { k: 'Uncommon',  c: '#22c55e', ic: 'img/case-uncommon.png',  min: 1.02,max: 1.12,p: 27, px: 9.3, d: 27 },
+  { k: 'Rare',      c: '#4f6bff', ic: 'img/case-rare.png',      min: 1.22,max: 1.45, p: 13.2, px: 4, d: 13 },
+  { k: 'Legendary', c: '#fbbf24', ic: 'img/case-legendary.png', min: 3.1, max: 4.8, p: 5.3, px: 1.5, d: 5.4,  fx: '#fbbf24' },
+  { k: 'Mythic',    c: '#ef4444', ic: 'img/case-mythic.png',    min: 4.8, max: 7.2, p: 2.5, px: .6, d: 2.9, fx: '#ef4444' },
+  { k: 'Secret',    c: '#05070a', b: '#6b7280', ic: 'img/case-secret.png', min: 7.4, max: 11.6, p: .75, px: .15, d: .65, fx: '#e5e7eb' },
+  { k: 'Pirate',    n: 'Pirate Token', c: '#ffd84d', b: '#d4a017', ic: 'img/case-pirate.jpg', min: 100, max: 145, p: .04, px: .01, d: .05, fx: '#ffd84d', gold: 1 }
 ];
 const LIFE=['Legendary','Mythic','Secret','Pirate'],LOCK_BEAT=3000;
 const TEASE_P=.6,FAKE_P=.12,TIP_P=.15,MIN_REAL=3,FLIP_MS=900,XDOWN_P=.06,XUP_P=.04,MAX_ROWS=2,SPEED_CAP=5;   // v2.75: max 2 PERMANENT extra rows (Perks.MAXR)

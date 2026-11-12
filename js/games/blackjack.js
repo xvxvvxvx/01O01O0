@@ -24,9 +24,9 @@ q('#go').disabled=!(phase==='idle'||phase==='over');
 if(p){const t=tot(h.c);q('#bi').textContent=`Bust chance if you hit: ${t.soft||t.v<=11?0:BUST[t.v]||100}%`}else q('#bi').textContent='Blackjack pays 3 to 2. Dealer stands on all 17s.'}
 function take(a){if(a>Store.d.balance+1e-9){App.toast('Not enough Steakcoin');return false}Store.d.balance=Math.round((Store.d.balance-a)*100)/100;if(App.live)App.live.bet+=a;Store.save();App.bal();return true}
 function end(){phase='over';hole=false;App.live=null;const d=tot(dealer),dBJ=dealer.length===2&&d.v===21;let net=0;
-hands.forEach(h=>{const t=tot(h.c),nat=!split&&h.c.length===2&&t.v===21;let pay=0;
+hands.forEach((h,hi)=>{const t=tot(h.c),nat=!split&&h.c.length===2&&t.v===21;let pay=0;
 if(t.v>21)pay=0;else if(nat)pay=dBJ?h.bet:h.bet*2.5;else if(dBJ)pay=0;else if(d.v>21||t.v>d.v)pay=h.bet*2;else if(t.v===d.v)pay=h.bet;
-App.settle('BLACKJACK',h.bet,pay);net+=pay-h.bet});
+App.settle('BLACKJACK',h.bet,pay,hi>0?{noCount:true}:undefined);net+=pay-h.bet});
 App.toast(net>0?`You won +$${App.f(net)}`:net<0?`Lost $${App.f(-net)}`:'Push: bet returned');render();ctl()}
 function dealerPlay(){phase='dealer';hole=false;render();ctl();const step=()=>{if(hands.some(h=>tot(h.c).v<=21)&&tot(dealer).v<17){dealer.push(draw());render();T(step,650)}else T(end,500)};T(step,600)}
 function next(){cur++;while(cur<hands.length&&(hands[cur].done||tot(hands[cur].c).v>=21))cur++;if(cur>=hands.length)dealerPlay();else{render();ctl()}}
