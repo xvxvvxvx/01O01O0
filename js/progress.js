@@ -58,21 +58,29 @@ x.rows.forEach(r=>{if(!r.done||r.cl)return;const fresh=!seen.has(r.i);
 if(!r.s.rw){claim(r.i);if(fresh){seen.add(r.i);try{App.toast('Goal complete: '+r.s.t)}catch(e){}}}
 else if(fresh){seen.add(r.i);try{App.toast(`Goal complete: ${r.s.t}! Claim your reward`)}catch(e){}}})}
 /* the one goal shown right now */
-function view(){const x=state();if(!x)return null;const cur=x.rows.find(r=>!r.cl),d=Store.d;
+function view0(){const x=state();if(!x)return null;const cur=x.rows.find(r=>!r.cl),d=Store.d;
 if(cur){const s=cur.s,go=s.go?s.go(d):null;return{kind:'starter',n:cur.i+1,total:S.length,title:s.t,why:typeof s.why==='function'?s.why(d):s.why,pct:cur.m?Math.min(100,Math.floor(cur.c/cur.m*100)):0,label:cur.l,reward:rwText(s,true),rewardTxt:rwText(s,false),unlock:s.un,go,claim:cur.done?cur.i:-1,rows:x.rows}}
 const r=Rank.status();if(r.max)return{kind:'max',title:'Maximum rank reached',why:'Keep climbing Mastery levels and collecting cosmetics.',pct:100,label:'',reward:'',rewardTxt:'',unlock:'',go:['#mastery','Open Mastery'],claim:-1,rows:x.rows};
 return{kind:'rank',title:'Reach '+r.next.n,why:'Earn profit and play rounds to fill both bars, then rank up for starting cash and Gems.',pct:Math.floor(Math.min(r.coin/r.req.c,r.rounds/r.req.r,1)*100),label:`$${Econ.fi(Math.min(r.coin,r.req.c))}/$${Econ.fi(r.req.c)} earned • ${Math.min(r.rounds,r.req.r)}/${r.req.r} rounds`,
 reward:rwTxt2(r.idx+1).replace(/ Gems$/,' '+(typeof gemIcon==='function'?gemIcon(14):'')+' Gems'),rewardTxt:rwTxt2(r.idx+1),unlock:CFG.RANKS[r.idx+2]?'Then: '+CFG.RANKS[r.idx+2].n:'Then: the top ranks',go:['#rankup',r.ready?'Rank up now':'Open Rank-Up'],claim:-1,rows:x.rows}}
+/* v2.95: the two rank requirements as separate bars (money earned / rounds played); null at the top rank */
+function rankBars(){const s=Rank.status();return s.max?null:{c:Math.min(s.coin,s.req.c),cr:s.req.c,r:Math.min(s.rounds,s.req.r),rr:s.req.r,next:s.next.n}}
+function view(){const v=view0();if(v)v.bars=rankBars();return v}
 /* small wins between big ones: halfway + ready toasts, once per rank */
 function milestones(){const d=Store.d;if(!d||!d.user)return;const s=Rank.status();if(s.max)return;const key='gold_ms_'+s.idx,v=+gp(key)||0,f=Math.min(s.coin/s.req.c,s.rounds/s.req.r);
 if(s.ready&&v<2){sp(key,'2');App.toast(`Rank-Up ready! Open the Rank-Up page to become ${s.next.n}.`)}else if(!s.ready&&f>=.5&&v<1){sp(key,'1');App.toast(`Halfway to ${s.next.n}. Keep going!`)}}
-const api={S,KEY,state,claim,sweep,view,rwText,milestones,TIPS,unplayed};
+const api={S,KEY,state,claim,sweep,view,rankBars,rwText,milestones,TIPS,unplayed};
 if(typeof document==='undefined'||typeof Dash==='undefined')return api;
 /* ---------- rendering ---------- */
 const stepList=v=>`<ul class="gl-list">${v.rows.map((r,i)=>`<li class="${r.cl?'d':v.kind==='starter'&&r.i+1===v.n?'c':''}"><span class="gl-ck">${r.cl?'✔':v.kind==='starter'&&r.i+1===v.n?'▶':'🔒'}</span><span>${r.s.t}</span><small>${rwText(r.s,true)}</small></li>`).join('')}</ul>`;
 const how=()=>keys(Store.d)===0&&!gp('gold_how')?`<div class="gl-how"><b>How Gold works</b><ol><li><b>Play</b> mini-games with fictional 01O0coin.</li><li><b>Profit and rounds</b> fill your Rank-Up bars.</li><li><b>Rank up</b> for starting cash and ${gemIcon(14)} Gems, then spend Gems on tags and gradients.</li></ol><button type="button" class="btn dim" data-howx>Got it</button></div>`:'';
 const act=v=>v.claim>=0?`<button type="button" class="btn gl-claim" data-gclaim="${v.claim}">CLAIM REWARD</button>`:v.go?`<a class="btn gl-go" href="${v.go[0]}">${v.go[1]} ›</a>`:'';
-function homeHtml(v){return `<h3>🎯 Your Goal ›</h3>${how()}<div class="gl-top"><span class="gl-step">${v.kind==='starter'?`GETTING STARTED ${v.n}/${v.total}`:v.kind==='rank'?'NEXT RANK':'TOP RANK'}</span><b class="gl-name">${v.title}</b></div><p class="gl-why">${v.why}</p>${v.kind==='max'?'':Dash.bar(v.label||v.pct+'%',v.pct/100)}${v.reward?`<div class="gl-rw"><span>🎁 Reward: <b>${v.reward}</b></span>${v.unlock?`<span>${v.unlock}</span>`:''}</div>`:''}<div class="gl-act">${act(v)}</div>${v.kind==='starter'?stepList(v):''}`}
+const EYE='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>',EYEX='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.9 10.9 0 0 1 12 19c-7 0-11-7-11-7a19.8 19.8 0 0 1 5.1-5.9M9.9 5.1A10.4 10.4 0 0 1 12 5c7 0 11 7 11 7a19.7 19.7 0 0 1-3.2 4.2M1 1l22 22"/></svg>';
+const HIDE='gold_goal_hide',hidden=()=>gp(HIDE)==='1';
+const eyeBtn=()=>`<button type="button" class="gb-eye" data-geye aria-pressed="${hidden()}" aria-label="${hidden()?'Show objectives':'Hide objectives'}" title="${hidden()?'Show objectives':'Hide objectives'}">${hidden()?EYEX:EYE}</button>`;
+const bar2=(l,t,f)=>`<div class="gb-row"><span class="gb-l">${l}</span><span class="gb-bar"><i style="width:${Math.min(100,Math.max(0,f*100))}%"></i></span><span class="gb-t">${t}</span></div>`;
+const barsHtml=b=>b&&!hidden()?`<div class="gb-bars">${bar2('Money','$'+Econ.fi(b.c)+' / $'+Econ.fi(b.cr),b.c/b.cr)}${bar2('Rounds',fmt(b.r)+' / '+fmt(b.rr),b.r/b.rr)}</div>`:'';
+function homeHtml(v){return `<h3>🎯 Your Goal › ${eyeBtn()}</h3>${how()}<div class="gl-top"><span class="gl-step">${v.kind==='starter'?`GETTING STARTED ${v.n}/${v.total}`:v.kind==='rank'?'NEXT RANK':'TOP RANK'}</span><b class="gl-name">${v.title}</b></div><p class="gl-why">${v.why}</p>${v.kind==='max'||hidden()?'':v.kind==='starter'?Dash.bar(v.label||v.pct+'%',v.pct/100):''}${barsHtml(v.bars)}${v.reward?`<div class="gl-rw"><span>🎁 Reward: <b>${v.reward}</b></span>${v.unlock?`<span>${v.unlock}</span>`:''}</div>`:''}<div class="gl-act">${act(v)}</div>${v.kind==='starter'?stepList(v):''}`}
 function comingUp(){const s=Rank.status(),R=CFG.RANKS;let h='<h3>🔭 Coming Up ›</h3><div class="up-cols"><div><h4>Next ranks</h4>';
 if(s.max)h+='<p class="none">You are at the top rank!</p>';else for(let k=1;k<=3&&R[s.idx+k];k++){const i=s.idx+k,q=R[i-1].req;h+=`<div class="up-r${k>1?' lock':''}"><span>${k>1?'🔒 ':''}${Badge.txt(i)}</span><small>${q?`$${Econ.fi(q.c)} earned + ${q.r} rounds`:''}</small><small>Reward: ${rwTxt2(i).replace(/ Gems$/,' '+gemIcon(13)+' Gems')}</small></div>`}
 h+='</div><div><h4>Closest Mastery levels</h4>';
@@ -84,10 +92,10 @@ h+=nc?`<div class="up-c"><div class="sprev">${prevHtml(nc.c)}</div><small>${nc.t
 Quests.sync();const dq=Quests.list('d').filter(q=>!Quests.claimed('d',q)).map(q=>({q,f:Quests.prog('d',q)/q.target})).sort((a,b)=>b.f-a.f)[0];
 if(dq)h+=`<h4>Closest daily quest</h4><div class="up-m"><small>${dq.q.name}</small>${Dash.bar(`${Math.floor(dq.f*100)}%`,dq.f)}<small>Reward: ${dq.q.gems} ${gemIcon(12)} Gems</small></div>`;
 return h+'</div></div>'}
-const stripHtml=v=>`<span class="gb-i" aria-hidden="true">🎯</span><div class="gb-m"><b>${v.title}</b><span class="gb-p">${v.label}</span><i class="gb-bar"><i style="width:${v.pct}%"></i></i></div>${v.reward?`<span class="gb-r">${v.reward}</span>`:''}${v.claim>=0?`<button type="button" class="btn gb-a" data-gclaim="${v.claim}">CLAIM</button>`:v.go?`<a class="btn gb-a" href="${v.go[0]}">${v.go[1]}</a>`:''}<button type="button" class="gb-x" aria-label="Hide goal" data-gbx>×</button>`;
+const stripHtml=v=>`<span class="gb-i" aria-hidden="true">🎯</span><div class="gb-m"><b>${v.kind==='starter'?v.title:'Reach '+(v.bars?v.bars.next:'next rank')}</b>${v.kind==='starter'&&!hidden()?`<span class="gb-p">${v.label}</span>`:''}${barsHtml(v.bars)}${hidden()?'<span class="gb-p">Objectives hidden</span>':''}</div>${v.reward&&!hidden()?`<span class="gb-r">${v.reward}</span>`:''}${v.claim>=0?`<button type="button" class="btn gb-a" data-gclaim="${v.claim}">CLAIM</button>`:v.go&&!hidden()?`<a class="btn gb-a" href="${v.go[0]}">${v.go[1]}</a>`:''}${eyeBtn()}<button type="button" class="gb-x" aria-label="Hide goal" data-gbx>×</button>`;
 let gbx='',lastSig='',tickN=0;
 const onHome=()=>{const k=location.hash.slice(1);return!(Games[k]||Pages[k])};
-const sigOf=v=>v?[v.title,v.pct,v.claim,v.label,v.why].join('|'):'';
+const sigOf=v=>v?[v.title,v.pct,v.claim,v.label,v.why,hidden(),v.bars?[v.bars.c,v.bars.r,v.bars.cr,v.bars.rr].join(','):''].join('|'):'';
 function strip(){const v=Store.d&&Store.d.user?view():null;let el=document.getElementById('goalbar');
 if(!v||onHome()||v.kind==='max'||gbx===v.title){if(el)el.remove();document.body.classList.remove('has-gb');return}
 if(!el){el=document.createElement('div');el.id='goalbar';el.setAttribute('role','status');const a=document.getElementById('app');a.parentNode.insertBefore(el,a)}
@@ -117,6 +125,7 @@ document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;
 const c=t.closest('[data-gclaim]');if(c){if(c.disabled)return;c.disabled=true;const r=claim(+c.dataset.gclaim);
 if(r.ok){const p=[];if(r.c)p.push('+$'+r.c);if(r.g)p.push('+'+r.g+' Gem'+(r.g>1?'s':''));App.toast('Goal reward claimed: '+p.join(', '));try{FX.confetti(c.closest('.gl,#goalbar')||document.body,30)}catch(x){}}else App.toast(r.msg);
 sweep();refresh(true);return}
+if(t.closest('[data-geye]')){sp(HIDE,hidden()?'0':'1');refresh(true);return}
 if(t.closest('[data-howx]')){sp('gold_how','1');paintHome();return}
 if(t.closest('[data-gbx]')){const v=view();if(v)gbx=v.title;strip()}});
 return api})();

@@ -50,9 +50,12 @@ RANKS:[
 SPIN_SPEED:[[24,2.5],[7,2],[3,1.5]],
 AVI_SPEED:[[34,2.75],[30,2.5],[7,2],[3,1.5]],
 CONV:{PLINKO:2000,CASES:3,FLIP:5,'DOUBLE OR NOTHING':5},   // raw rounds per 1 qualified mini-game round (others 1). v2.6: Plinko 1000 -> 2000
-GAP_MS:{},                                  // minimum delay between wagers per game (enforced in Econ.cool, shared across tabs). v2.6: Plinko's 400 ms drop cooldown was removed
+GAP_MS:{MINES:1500,CHICKEN:1000,FLIP:800},                                  // minimum delay between wagers per game (enforced in Econ.cool, shared across tabs). v2.6: Plinko's 400 ms drop cooldown was removed
 LOCK_TTL_MS:15000,                          // a cross-tab bet lock with no heartbeat for this long is stale and can be taken over
 MIN_BET:{PLINKO:1},DEFAULT_MIN:0.01,
+ROUND_MIN_BET:1,                            // v2.95: a wager below this still pays/loses normally but does NOT count as a rank/quest round (stops 0.01-bet round farming)
+MINES:{MAX_MINES:23,MIN_MINES:1},           // v2.95: 24 mines (a single diamond left) is no longer selectable
+DAILY_RANK_SCALE:0.1,                       // v2.95: Daily Spin cash + gem rewards grow by +10% of the base per rank index (Unranked = x1)
 // Rarity: gems = normal price, deal = special-deal price, w = shop appearance weight (configurable; favours Common/Rare).
 RAR:{common:{n:'Common',gems:1,deal:1,w:50,color:'#f1f5f9'},rare:{n:'Rare',gems:2,deal:1,w:30,color:'#4f7cff'},epic:{n:'Epic',gems:3,deal:2,w:15,color:'#d066e8'},legendary:{n:'Legendary',gems:5,deal:3,w:5,color:'#ffd84d'}},
 SHOP:{ROTATION_MS:12*3600*1000,GRADS:4,TAGS:3,DEALS:4},   // 3 featured + 4 special deals = 7 offers

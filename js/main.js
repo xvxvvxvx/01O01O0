@@ -37,17 +37,17 @@ toast(m){let t=$('stk-toast');if(!t){t=document.createElement('div');t.id='stk-t
 t.textContent=m;t.className='';void t.offsetWidth;t.className='show '+(/lost|boom|splat|crash|not enough|enter a|minimum|at most/i.test(m)?'bad':/cashed|landed|reward|\+\$|saved/i.test(m)?'good':'')},
 /* v2.75: .bal only exists in the home "Your Balance" section: 1,234.560 (display only) */
 bal(){document.querySelectorAll('.bal').forEach(e=>e.textContent=Econ.fmt3(Store.d.balance));document.querySelectorAll('.gembal').forEach(e=>e.textContent=Store.d.gems);if(typeof Shell!=='undefined')Shell.update()},
-betHTML(){return '<div class="betrow"><input class="bet" type="number" min="0.01" step="0.01" value="1"><button class="mini" data-m="0.5">½</button><button class="mini" data-m="2">2×</button></div>'},
+betHTML(){return '<div class="betrow"><input class="bet" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="1, 1.5k, 2m, 1b" value="1"><button class="mini" data-m="0.5">½</button><button class="mini" data-m="2">2×</button></div>'},
 /* Wager path: validation lives in Econ.checkBet (not just the HTML input). */
 bet(el,game,keep){if(!Store.d.user){this.route();return 0}
 const c=Econ.checkBet(el.querySelector('.bet').value,game,Store.d.balance);if(!c.ok){this.toast(c.msg);return 0}
-const w=Econ.cool(game);if(w){this.toast('Slow down: wait '+(w/1000).toFixed(1)+'s before the next drop');return 0}
+const w=Econ.cool(game);if(w){this.toast('Slow down: wait '+(w/1000).toFixed(1)+'s before the next round');return 0}
 Store.d.balance=Econ.r2(Store.d.balance-c.v);if(!keep)this.live={game,bet:c.v};Store.save();this.bal();return c.v},
 /* Settlement path: returns the FINAL payout (after rank/bonus profit multiplier). */
-settle(game,bet,gross){const pay=Econ.settle(game,bet,gross);if(this.live&&this.live.game===game&&this.live.bet===bet)this.live=null;this.bal();return pay},
+settle(game,bet,gross,opts){const pay=Econ.settle(game,bet,gross,opts);if(this.live&&this.live.game===game&&this.live.bet===bet)this.live=null;this.bal();return pay},
 setUser(n){n=(n||'').trim().slice(0,16);if(!n)return false;Store.d.user=n;Store.save();return true},
 route(){if(this.cur){this.cur();this.cur=null}
-if(this.live){const l=this.live;this.live=null;this.settle(l.game,l.bet,0)}
+if(this.live){const l=this.live;this.live=null;this.settle(l.game,l.bet,0,{noCount:true})}
 Daily.credit();   // pays a claimed reward if the page was refreshed mid-spin
 if(!Store.d.user){this.welcome();return}
 Shell.show(true);const k=location.hash.slice(1),g=Games[k],p=Pages[k];
@@ -58,7 +58,8 @@ this.cur=g.mount($('gm'))||null;this.bal()},
 welcome(){Shell.show(false);$('app').innerHTML='<section class="welcome"><h1>Welcome to <span class="gold">Gold</span> 🤖</h1><input id="gu" placeholder="Type username here…" maxlength="16" autofocus><button id="gb" class="pillbtn">Continue…</button></section>';
 const go=()=>{if(this.setUser($('gu').value)){location.hash='';this.route()}else this.toast('Type a username first')};
 $('gb').onclick=go;$('gu').onkeydown=e=>{if(e.key==='Enter')go()}},
-init(){document.addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const i=b.parentElement.querySelector('.bet');i.value=Math.max(+i.min||0.01,Math.floor(i.value*b.dataset.m*100)/100)});
+init(){document.addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;const i=b.parentElement.querySelector('.bet');const v=Econ.parseAmt(i.value);if(!Number.isFinite(v))return;i.value=Math.max(+i.min||0.01,Math.floor(v*b.dataset.m*100+1e-6)/100)});
+document.addEventListener('focusout',e=>{const i=e.target;if(!i||!i.classList||!i.classList.contains('bet'))return;const v=Econ.parseAmt(i.value);if(Number.isFinite(v)&&v>0&&/[kmb]$/i.test(String(i.value).trim()))i.value=String(+v.toFixed(2))});
 /* One game per Space press: held-key repeats are ignored, and nothing ever starts a game by itself (no auto-play anywhere). */
 document.addEventListener('keydown',e=>{if(e.code!=='Space'||e.repeat||e.defaultPrevented)return;const t=e.target,tg=t&&t.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT'||tg==='BUTTON'||tg==='A'||document.querySelector('.mo'))return;
 const b=document.querySelector('#gm #go');if(b&&!b.disabled){e.preventDefault();b.click()}});

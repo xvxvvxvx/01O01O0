@@ -30,7 +30,7 @@ new MutationObserver(ms=>{for(const m of ms){if(m.type==='childList')m.addedNode
 /* 5) compact side panels */
 const SHORT={
 plinko:'Drop a ball through the pegs into a multiplier pot; the edges pay most. No cooldown (one click or Space per ball). RTP about 99%. 2,000 balls = 1 rank round.',
-aviamasters:'Collect +n and ×1.3–×1.7 items, dodge rockets, land on the carrier (max 250x). Below 1x is a loss. RTP about 101%. Rare jackpots pay 10x to 250x (chances listed below). Turbo only changes animation speed. Space relaunches.'};
+aviamasters:'Collect +n and ×1.25–×1.45 items, dodge rockets, land on the carrier (max 300x). Below 1x is a loss. RTP about 101%. Rare jackpots pay 10x to 300x, a random multiplier inside each range (chances listed below). Turbo only changes animation speed. Space relaunches.'};
 function tidy(k,el){const s=el.querySelector('.side');if(!s)return;const h=[...s.querySelectorAll('.hist')];if(h[0]&&SHORT[k])h[0].textContent=SHORT[k];
 if(k==='aviamasters'){s.classList.add('avi-side');if(h[0])h[0].classList.add('avi-desc');const rf=h.find(x=>/Recent flights/.test(x.textContent));if(rf)rf.classList.add('avi-rf')}
 if(k==='doubleornothing'){const p=s.querySelector('p');if(p)p.textContent='Double your bet or lose it all: a 50% chance to double.'}}

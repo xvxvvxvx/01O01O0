@@ -11,8 +11,11 @@ rnd(){try{return crypto.getRandomValues(new Uint32Array(1))[0]/4294967296}catch(
 cool(game,now=Date.now()){const gap=CFG.GAP_MS[game];if(!gap)return 0;const k='steak_gap_'+game;let last=0;try{last=+localStorage.getItem(k)||0}catch(e){}
 if(last>now)last=0;const left=last+gap-now;if(left>0)return left;try{localStorage.setItem(k,String(now))}catch(e){}return 0},
 minBet:g=>CFG.MIN_BET[g]||CFG.DEFAULT_MIN,
+/* v2.95: wager text -> number. Accepts a trailing k/m/b (1.5k = 1500, 2m = 2,000,000, 1b = 1e9), thousands commas/spaces; decimal-safe (no float drift). NaN when invalid. */
+parseAmt(raw){if(typeof raw==='number')return raw;const s=String(raw==null?'':raw).trim().replace(/[,_\s]/g,'');const m=/^(\d+\.?\d*|\.\d+)([kmb])$/i.exec(s);
+if(m)return Number(m[1]+'e'+({k:3,m:6,b:9})[m[2].toLowerCase()]);return /^(\d+\.?\d*|\.\d+)$/.test(s)?Number(s):NaN},
 checkBet(raw,game,balance){Store.check();if(Store.armed&&Store.d)balance=Math.min(balance,Store.d.balance);   // never trust a caller-supplied balance
-const v=Number(String(raw).trim());
+const v=Econ.parseAmt(raw);
 if(!Number.isFinite(v)||v<=0)return{ok:false,msg:'Enter a bet above 0'};
 if(Math.abs(v*100-Math.round(v*100))>1e-6)return{ok:false,msg:'Bets can have at most 2 decimal places'};
 const min=Econ.minBet(game);if(v<min-1e-9)return{ok:false,msg:`Minimum ${game[0]+game.slice(1).toLowerCase()} bet is ${min.toFixed(2)} Steakcoin`};
@@ -23,7 +26,7 @@ effMult:(now)=>Econ.bonusActive(now)?CFG.DAILY.BONUS_MULT:1,                  //
 summary:()=>Econ.bonusActive()?`2X 01O0coin bonus active (profit x${CFG.DAILY.BONUS_MULT})`:'No active profit bonus',
 /* gross = total returned INCLUDING stake. Only positive net profit is multiplied (by the 2X bonus, if active). */
 payout(bet,gross,now){const net=Econ.r2(gross-bet);return net>0?Econ.r2(bet+net*Econ.effMult(now)):Econ.r2(gross)},
-settle(game,bet,gross){Store.check();const pay=Econ.payout(bet,gross),d=Store.d,net=Econ.r2(pay-bet);d.balance=Econ.r2(d.balance+pay);Store.sync();Stats.record(game,bet,pay);Rank.onRound(game,net);Store.save();return pay},
+settle(game,bet,gross,opts){Store.check();const pay=Econ.payout(bet,gross),d=Store.d,net=Econ.r2(pay-bet);d.balance=Econ.r2(d.balance+pay);Store.sync();Stats.record(game,bet,pay);Rank.onRound(game,net,!(opts&&opts.noCount)&&bet>=CFG.ROUND_MIN_BET-1e-9);Store.save();return pay},
 /* Wallet credit that is NOT game profit: no stats, no rank money, no quest progress (cosmetic sales, Gem conversion, resets). */
 addCoins(n){Store.check();Store.d.balance=Econ.r2(Store.d.balance+n);Store.sync();Store.save()},
 resetBalance(){Store.check();Store.d.balance=Econ.startBalance();Store.sync();Store.save()}};
@@ -40,7 +43,7 @@ const Rank={
 status(){const d=Store.d,cur=CFG.RANKS[d.rk],next=CFG.RANKS[d.rk+1]||null,req=cur.req,coin=Math.max(0,Econ.r2(d.rc)),rounds=d.rq;
 return{idx:d.rk,cur,next,req,coin,rounds,max:!req,ready:!!req&&coin>=req.c&&rounds>=req.r}},
 /* Once per settled round: qualified-round conversion + eligible money (positive net profit) + quest progress. */
-onRound(game,net){const d=Store.d,n=CFG.CONV[game]||1;d.pt[game]=(d.pt[game]||0)+1;if(d.pt[game]>=n){d.pt[game]-=n;d.rq++;d.lq++;Quests.add('rounds',1)}
+onRound(game,net,count=true){const d=Store.d,n=CFG.CONV[game]||1;if(count){d.pt[game]=(d.pt[game]||0)+1;if(d.pt[game]>=n){d.pt[game]-=n;d.rq++;d.lq++;Quests.add('rounds',1)}}
 if(net>0){d.rc=Econ.r2(d.rc+net);Quests.add('profit',net)}},
 addMoney(n){Store.d.rc=Econ.r2(Store.d.rc+n)},      // Daily Spin Steakcoin rewards count toward rank money
 /* Single reviewable rank-up: validates again; wallet reset to the NEW rank's starting cash; Gems granted; rank counters reset; lifetime stats/cosmetics kept. */
@@ -48,9 +51,11 @@ rankUp(){Store.load();const s=Rank.status();if(!s.ready)return null;const d=Stor
 const Daily={
 readyIn:(now=Date.now())=>Math.max(0,Store.d.dl+CFG.DAILY.COOLDOWN_MS-now),
 ready:(now)=>Daily.readyIn(now)===0,
-roll(rnd=Econ.rnd){const R=CFG.DAILY.REWARDS,t=R.reduce((a,r)=>a+r.p,0);let x=rnd()*t,r=R[R.length-1];for(const c of R){if(x<c.p){r=c;break}x-=c.p}
-return r.id==='x2'?{id:'x2',amount:0}:{id:r.id,amount:r.min+Math.floor(rnd()*(r.max-r.min+1))}},
-claim(now=Date.now()){Store.load();Daily.credit(now);if(!Daily.ready(now))return null;const rw=Daily.roll(),d=Store.d;d.dl=now;d.dr=rw;d.dc=false;Store.save();return rw},
+/* v2.95: cash + gem rewards scale with rank (x1 at Unranked, +CFG.DAILY_RANK_SCALE of base per rank index). Applied at roll time. */
+scale:(rk=Store.d?Store.d.rk:0)=>1+CFG.DAILY_RANK_SCALE*Math.max(0,rk|0),
+roll(rnd=Econ.rnd,rk=0){const R=CFG.DAILY.REWARDS,t=R.reduce((a,r)=>a+r.p,0);let x=rnd()*t,r=R[R.length-1];for(const c of R){if(x<c.p){r=c;break}x-=c.p}
+if(r.id==='x2')return{id:'x2',amount:0};const k=Daily.scale(rk),a=r.min+Math.floor(rnd()*(r.max-r.min+1));return{id:r.id,amount:r.id==='gem'?Math.max(1,Math.round(a*k)):Econ.r2(Math.round(a*k))}},
+claim(now=Date.now()){Store.load();Daily.credit(now);if(!Daily.ready(now))return null;const d=Store.d,rw=Daily.roll(Econ.rnd,d.rk);d.dl=now;d.dr=rw;d.dc=false;Store.save();return rw},
 /* Idempotent payout. Steakcoin reward -> balance AND rank money (once). Gem reward -> Gems only. 2X -> 15 min bonus (no stacking). */
 credit(now=Date.now()){Store.check();const d=Store.d;if(!d.dr||d.dc)return false;d.dc=true;
 if(d.dr.id==='x2')d.bx=now+CFG.DAILY.BONUS_MS;else if(d.dr.id==='gem')d.gems+=d.dr.amount;else{d.balance=Econ.r2(d.balance+d.dr.amount);Rank.addMoney(d.dr.amount)}

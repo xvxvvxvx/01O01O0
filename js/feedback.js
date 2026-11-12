@@ -25,7 +25,7 @@ else if(el&&el.querySelectorAll){el.querySelectorAll('.fb-hint').forEach(x=>x.re
 return r};
 /* ---- rounds: stage flash ---- */
 const os=App.settle;
-App.settle=function(g,b,gross){const pay=os.call(this,g,b,gross);try{const st=document.querySelector('#gm .stage'),net=pay-b;if(st)pulse(st,net>.004?'fb-win':net<-.004?'fb-loss':'fb-even',800)}catch(e){}return pay};
+App.settle=function(g,b,gross,o){const pay=os.call(this,g,b,gross,o);try{const st=document.querySelector('#gm .stage'),net=pay-b;if(st)pulse(st,net>.004?'fb-win':net<-.004?'fb-loss':'fb-even',800)}catch(e){}return pay};
 /* ---- balance / Gem pills ---- */
 let pb=null,pg=null;const su=Shell.update;
 Shell.update=function(){const r=su.apply(this,arguments);try{const d=Store.d;if(d){

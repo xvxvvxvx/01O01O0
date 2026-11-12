@@ -79,7 +79,7 @@ document.body.appendChild(b);requestAnimationFrame(()=>b.classList.add('in'));tr
 setTimeout(()=>{b.classList.remove('in');setTimeout(()=>{b.remove();showing=false;pump()},450)},3400)}
 const api={tracks,by,LV,COSLV,read,addMany,add:(id,n=1)=>addMany({[id]:n}),cases,record,total,devComplete,devReset,medal,KEY,claim,claimAll,claimable,claimableCount,stats,syncCollection,owned,TCT,GCT};
 /* every settled round feeds Mastery (wrapped once; Cases count themselves per row) */
-{const s=Econ.settle;Econ.settle=function(g,b,gross){const pay=s.call(this,g,b,gross);try{api.record(g,b,gross)}catch(e){console.error(e)}return pay}}
+{const s=Econ.settle;Econ.settle=function(g,b,gross,o){const pay=s.call(this,g,b,gross,o);try{if(!(o&&o.noCount)&&b>=CFG.ROUND_MIN_BET-1e-9)api.record(g,b,gross)}catch(e){console.error(e)}return pay}}
 /* collections follow the inventory: every save that gained a cosmetic (shop, crates, Pirate rewards, mastery claims) refreshes them at once */
 {const sv=Store.save;Store.save=function(){const r=sv.apply(this,arguments);try{syncCollection()}catch(e){console.error(e)}return r}}
 /* limited cosmetics can never be sold */
